@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - run: npm install --ignore-scripts --prefix "$GITHUB_WORKSPACE/.ergo-peer"
       - run: npm install --ignore-scripts
       - run: npm test
       - run: npm publish --provenance

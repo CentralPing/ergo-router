@@ -20,6 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm install --ignore-scripts --prefix "$GITHUB_WORKSPACE/.ergo-peer"
       - run: npm install --ignore-scripts
       - run: npm test
       - if: matrix.node-version == 22
