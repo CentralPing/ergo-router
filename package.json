@@ -49,7 +49,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CentralPing/ergo-router"
+    "url": "git+https://github.com/CentralPing/ergo-router.git"
   },
   "bugs": {
     "url": "https://github.com/CentralPing/ergo-router/issues"
