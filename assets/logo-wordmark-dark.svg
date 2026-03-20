@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" width="400" height="80">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <path d="M22 22 Q39 14 56 22" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.4" stroke-dasharray="4 3"/>
+  <path d="M22 22 Q16 40 39 58" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.4" stroke-dasharray="4 3"/>
+  <path d="M56 22 Q62 40 39 58" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.4" stroke-dasharray="4 3"/>
+  <circle cx="22" cy="22" r="9" fill="url(#g)"/>
+  <circle cx="56" cy="22" r="9" fill="url(#g)"/>
+  <circle cx="39" cy="58" r="9" fill="url(#g)"/>
+  <text x="82" y="56" font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-size="44" letter-spacing="-1">
+    <tspan font-weight="600" fill="#F1F5F9">ergo</tspan><tspan font-weight="300" fill="#94A3B8">-router</tspan>
+  </text>
+</svg>

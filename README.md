@@ -1,4 +1,10 @@
-# ergo-router
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-wordmark-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/logo-wordmark-light.svg">
+    <img alt="ergo-router" src="assets/logo-wordmark-light.svg" width="360">
+  </picture>
+</p>
 
 [![CI](https://github.com/CentralPing/ergo-router/actions/workflows/ci.yml/badge.svg)](https://github.com/CentralPing/ergo-router/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/CentralPing/ergo-router/branch/main/graph/badge.svg)](https://codecov.io/gh/CentralPing/ergo-router)
