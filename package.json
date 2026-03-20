@@ -75,7 +75,7 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "simple-git-hooks": "^2.12.1",
-    "undici": "^7.24.2"
+    "undici": "^7.24.5"
   },
   "c8": {
     "include": [
