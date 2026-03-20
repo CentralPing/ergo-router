@@ -15,7 +15,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: CentralPing/ergo
-          path: ../ergo
+          path: .ergo-peer
+      - run: ln -s "$GITHUB_WORKSPACE/.ergo-peer" "$GITHUB_WORKSPACE/../ergo"
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
