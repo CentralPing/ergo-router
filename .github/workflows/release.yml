@@ -18,7 +18,7 @@ jobs:
       - run: ln -s "$GITHUB_WORKSPACE/.ergo-peer" "$GITHUB_WORKSPACE/../ergo"
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
       - run: npm install --ignore-scripts --prefix "$GITHUB_WORKSPACE/.ergo-peer"
       - run: npm install --ignore-scripts
