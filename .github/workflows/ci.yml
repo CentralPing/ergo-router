@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      - run: npm install --ignore-scripts
       - run: npm test
       - if: matrix.node-version == 22
         uses: codecov/codecov-action@v5
