@@ -15,7 +15,7 @@ jobs:
           repository: CentralPing/ergo
           path: .ergo-peer
       - run: ln -s "$GITHUB_WORKSPACE/.ergo-peer" "$GITHUB_WORKSPACE/../ergo"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
