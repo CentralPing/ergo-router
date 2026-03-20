@@ -1,0 +1,33 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: CentralPing/ergo
+          path: ../ergo
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+      - if: matrix.node-version == 22
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/lcov.info
+      - if: github.ref == 'refs/heads/main' && matrix.node-version == 22
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
+          repository: CentralPing/centralping.github.io
+          event-type: docs-update
