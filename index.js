@@ -21,7 +21,7 @@
  * // Declarative config
  * router.get('/users/:id', {
  *   auth: {strategies: [bearerStrategy]},
- *   execute: (req, res, acc) => ({body: {id: acc.route.params.id}})
+ *   execute: (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})
  * });
  *
  * // Raw function handler (params as third argument)
