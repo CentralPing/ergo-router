@@ -18,7 +18,7 @@ A **REST-compliant router** for [ergo](https://github.com/CentralPing/ergo) with
 ## Why ergo-router?
 
 - **Automatic REST compliance** -- 405 Method Not Allowed with `Allow` header, HEAD falls back to GET, OPTIONS auto-responds with allowed methods, PATCH Content-Type enforcement. All per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110).
-- **Transport-level security** -- Security headers, CORS, rate limiting, and request ID generation run before routing, ensuring every response (including errors) is protected.
+- **Transport-level security** -- Security headers with conservative defaults (CSP `default-src 'none'`, HSTS, X-Frame-Options `DENY`), CORS, rate limiting, and request ID generation run before routing, ensuring every response -- including 404s and 405s -- is protected. Maps to [OWASP API8 (Security Misconfiguration)](https://owasp.org/API-Security/editions/2023/en/0xa8-security-misconfiguration/) and [API4 (Unrestricted Resource Consumption)](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/).
 - **Declarative pipeline assembly** -- Define routes with a config object; the router assembles the full Fast Fail pipeline (negotiation, auth, validation, execution) from ergo middleware automatically.
 - **Graceful shutdown** -- Built-in support for draining in-flight requests on SIGTERM/SIGINT.
 
@@ -146,6 +146,7 @@ See the [full API reference](https://centralping.github.io/api/ergo-router/) for
 | [RFC 6797](https://www.rfc-editor.org/rfc/rfc6797) | HTTP Strict Transport Security | Transport security headers |
 | [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) | Additional HTTP Status Codes | Rate limiting (429) |
 | [Fetch Standard](https://fetch.spec.whatwg.org/#http-cors-protocol) | CORS Protocol | Transport CORS handling |
+| [OWASP REST Security](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html) | REST API security best practices | Transport-layer protections, error redaction, request ID tracing |
 
 ## Documentation
 

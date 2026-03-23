@@ -43,7 +43,10 @@
     "router",
     "rest",
     "api",
-    "fast-fail"
+    "fast-fail",
+    "security",
+    "security-headers",
+    "owasp"
   ],
   "author": "Jason Cust <jason@centralping.com>",
   "license": "MIT",
