@@ -1,14 +1,53 @@
 language: en-US
+tone_instructions: >
+  Focus on REST compliance, RFC correctness (405, 415, 428 responses), transport-level
+  security (request-ID validation, HSTS HTTPS check, rate-limit short-circuit), and
+  correct integration with ergo's shared primitives and pipeline model.
 reviews:
-  profile: chill
+  profile: assertive
   request_changes_workflow: true
   high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  sequence_diagrams: true
+  review_details: true
   poem: false
   review_status: true
+  related_issues: true
+  related_prs: true
+  assess_linked_issues: true
+  estimate_code_review_effort: true
   path_filters:
     - "!assets/**"
+  path_instructions:
+    - path: "lib/transport/**"
+      instructions: >
+        Transport-level adapters wrapping ergo's shared primitives from lib/.
+        Must short-circuit before routing. Verify HTTPS-only for HSTS,
+        rate-limit header correctness, and request-ID validation.
+    - path: "lib/pipeline-builder.js"
+      instructions: >
+        Assembles the four-stage Fast Fail pipeline from declarative config.
+        Stage order: Negotiation > Authorization > Validation > Execution.
+        Verify [fn, setPath] tuple format and correct stage placement.
+    - path: "lib/auto-wrap.js"
+      instructions: >
+        Wraps route pipelines with handler() and send(). Verify 5xx detail
+        redaction, dual-accumulator model, and RFC 9457 error formatting.
+    - path: "lib/router.js"
+      instructions: >
+        Core router using find-my-way. Verify HEAD body suppression,
+        405/415 responses, and method registry integration.
   auto_review:
     enabled: true
     drafts: false
 chat:
   auto_reply: true
+knowledge_base:
+  learnings:
+    scope: auto
+  linked_repositories:
+    - repository: "CentralPing/ergo"
+      instructions: >
+        Core middleware toolkit. ergo-router depends on ergo's shared primitives
+        (lib/cors.js, lib/rate-limit.js, lib/security-headers.js, lib/vary.js,
+        lib/attach-instance.js) and pipeline utilities (compose, send, handler).
