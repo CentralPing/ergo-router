@@ -4,14 +4,14 @@
  * Re-exports the router factory from `lib/router.js` and the graceful
  * lifecycle utility from `lib/lifecycle.js`.
  *
- * @module ergo-router
+ * @module @centralping/ergo-router
  * @version 0.1.0
  * @since 0.1.0
  * @requires ./lib/router.js
  * @requires ./lib/lifecycle.js
  *
  * @example
- * import createRouter from 'ergo-router';
+ * import createRouter from '@centralping/ergo-router';
  *
  * const router = createRouter({
  *   transport: {requestId: {}, security: {}, cors: {origin: '*'}},
