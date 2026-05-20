@@ -75,10 +75,10 @@
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.4.0",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.0.2",
     "prettier": "^3.8.1",
     "simple-git-hooks": "^2.12.1",
-    "undici": "^7.24.5"
+    "undici": "^8.2.0"
   },
   "c8": {
     "include": [
