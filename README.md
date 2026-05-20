@@ -8,7 +8,7 @@
 
 [![CI](https://github.com/CentralPing/ergo-router/actions/workflows/ci.yml/badge.svg)](https://github.com/CentralPing/ergo-router/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/CentralPing/ergo-router/branch/main/graph/badge.svg)](https://codecov.io/gh/CentralPing/ergo-router)
-[![npm version](https://img.shields.io/npm/v/ergo-router.svg)](https://www.npmjs.com/package/ergo-router)
+[![npm version](https://img.shields.io/npm/v/@centralping/ergo-router.svg)](https://www.npmjs.com/package/@centralping/ergo-router)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/CentralPing/ergo-router/badge)](https://scorecard.dev/viewer/?uri=github.com/CentralPing/ergo-router)
 [![Node.js >=22](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -54,15 +54,15 @@ Every early exit (429, 403, 404, 405, 415, preflight 204) includes security head
 ## Installation
 
 ```bash
-npm install ergo-router ergo find-my-way
+npm install @centralping/ergo-router @centralping/ergo find-my-way
 ```
 
-Requires **Node.js >= 22**. `ergo` is a peer dependency.
+Requires **Node.js >= 22**. `@centralping/ergo` is a peer dependency.
 
 ## Quick Start
 
 ```js
-import createRouter from 'ergo-router';
+import createRouter from '@centralping/ergo-router';
 
 const router = createRouter({
   transport: {
@@ -129,7 +129,7 @@ router.delete(path, config)
 Graceful shutdown helper. Stops accepting new connections and drains in-flight requests.
 
 ```js
-import createRouter, {graceful} from 'ergo-router';
+import createRouter, {graceful} from '@centralping/ergo-router';
 const router = createRouter({...});
 const server = router.listen(3000);
 graceful(server);
