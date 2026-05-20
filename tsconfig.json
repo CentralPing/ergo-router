@@ -5,7 +5,10 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "target": "es2022",
-    "noEmit": true
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "skipLibCheck": true,
+    "outDir": "types"
   },
   "include": ["index.js", "lib/**/*.js"],
   "exclude": ["**/*.spec.*.js"]

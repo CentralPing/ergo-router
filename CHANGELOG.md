@@ -2,11 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-beta.1] - 2026-05-20
+
+### Changed
+
+- **BREAKING**: Renamed package from `ergo-router` to `@centralping/ergo-router`.
+- **BREAKING**: Pipeline v2 — two-accumulator model integration. Route handlers now receive `domainAcc` (seeded with `{route: {params}}`) and `responseAcc` instead of a single accumulator. The `formatError` router option is removed; errors flow through `responseAcc`.
+- Pipeline builder uses `[fn, setPath]` tuple format (removed `getPaths` element).
+- Simplified `prefer` option from key string to boolean flag.
+- Added TypeScript declaration files (`.d.ts`) generated from JSDoc.
+- Added `--test-force-exit` to test command (prevents CI hangs from unclosed handles).
+- Updated release workflow to support pre-release dist-tags.
+- Tightened peerDependency to `@centralping/ergo@>=0.1.0-beta.1`.
+
 ## [0.1.0] - 2026-03-20
 
 ### Added
 
-- Initial public release as `ergo-router` (unscoped).
+- Initial development release as `ergo-router` (unscoped, never published to npm).
 - REST-compliant router with path matching via `find-my-way`.
 - Automatic REST compliance: 405+Allow, HEAD, OPTIONS, and PATCH enforcement.
 - Transport-level middleware: security headers, CORS, rate limiting, request ID.
