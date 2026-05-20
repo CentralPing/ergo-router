@@ -23,4 +23,13 @@ jobs:
       - run: npm install --ignore-scripts --prefix "$GITHUB_WORKSPACE/.ergo-peer"
       - run: npm ci --ignore-scripts
       - run: npm test
-      - run: npm publish --provenance
+      - name: Determine dist-tag
+        id: dist-tag
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if echo "$VERSION" | grep -q '-'; then
+            echo "tag=--tag beta" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=" >> "$GITHUB_OUTPUT"
+          fi
+      - run: npm publish --provenance ${{ steps.dist-tag.outputs.tag }}

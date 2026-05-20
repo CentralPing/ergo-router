@@ -1,29 +1,43 @@
 {
   "name": "@centralping/ergo-router",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "description": "REST-compliant router for ergo with strict Fast Fail semantics",
   "main": "index.js",
   "type": "module",
+  "types": "types/index.d.ts",
   "exports": {
-    ".": "./index.js",
-    "./lib/transport": "./lib/transport/index.js",
-    "./lib/*": "./lib/*.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./index.js"
+    },
+    "./lib/transport": {
+      "types": "./types/lib/transport/index.d.ts",
+      "default": "./lib/transport/index.js"
+    },
+    "./lib/*": {
+      "types": "./types/lib/*.d.ts",
+      "default": "./lib/*.js"
+    }
   },
   "files": [
     "index.js",
     "lib/",
+    "types/",
+    "!**/*.spec.*.js",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "lint": "eslint .",
     "format": "prettier --write \"**/*.js\"",
     "format:check": "prettier --check \"**/*.js\"",
     "pretest": "npm run lint && npm run format:check",
-    "test": "c8 node --test \"**/*.spec.unit.js\" \"**/*.spec.func.js\"",
+    "test": "c8 node --test --test-force-exit \"**/*.spec.unit.js\" \"**/*.spec.func.js\"",
     "test:watch": "node --test --watch \"**/*.spec.unit.js\" \"**/*.spec.func.js\"",
     "preversion": "npm test",
-    "prepublishOnly": "npm test",
+    "types": "tsc",
+    "prepublishOnly": "npm test && npm run types",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
@@ -66,18 +80,20 @@
     "find-my-way": "^9.0.0"
   },
   "peerDependencies": {
-    "@centralping/ergo": ">=0.1.0"
+    "@centralping/ergo": ">=0.1.0-beta.1"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "c8": "^11.0.0",
     "@centralping/ergo": "file:../ergo",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.1",
+    "c8": "^11.0.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.4.0",
     "lint-staged": "^17.0.2",
     "prettier": "^3.8.1",
     "simple-git-hooks": "^2.12.1",
+    "typescript": "^6.0.3",
     "undici": "^8.2.0"
   },
   "c8": {
