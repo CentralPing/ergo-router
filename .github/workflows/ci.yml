@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install --ignore-scripts --prefix "$GITHUB_WORKSPACE/.ergo-peer"
-      - run: npm install --ignore-scripts
+      - run: npm ci --ignore-scripts
       - run: npm test
       - if: matrix.node-version == 22
         uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5

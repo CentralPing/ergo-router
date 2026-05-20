@@ -1,5 +1,5 @@
 {
-  "name": "ergo-router",
+  "name": "@centralping/ergo-router",
   "version": "0.1.0",
   "description": "REST-compliant router for ergo with strict Fast Fail semantics",
   "main": "index.js",
@@ -54,6 +54,9 @@
   "bugs": {
     "url": "https://github.com/CentralPing/ergo-router/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://github.com/CentralPing/ergo-router",
   "funding": {
     "type": "github",
@@ -63,12 +66,12 @@
     "find-my-way": "^9.0.0"
   },
   "peerDependencies": {
-    "ergo": ">=0.1.0"
+    "@centralping/ergo": ">=0.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "c8": "^11.0.0",
-    "ergo": "file:../ergo",
+    "@centralping/ergo": "file:../ergo",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.4.0",
