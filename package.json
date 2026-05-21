@@ -71,7 +71,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/CentralPing/ergo-router",
+  "homepage": "https://centralping.github.io/packages/ergo-router/",
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/jasoncust"
