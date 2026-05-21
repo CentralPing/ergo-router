@@ -1,6 +1,6 @@
 language: en-US
 reviews:
-  profile: chill
+  profile: assertive
   request_changes_workflow: true
   high_level_summary: true
   poem: false
@@ -10,5 +10,8 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+  tone_instructions: >
+    Focus on REST/RFC compliance, transport security, and correct integration
+    with @centralping/ergo shared primitives.
 chat:
   auto_reply: true

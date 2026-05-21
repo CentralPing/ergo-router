@@ -5,12 +5,12 @@
  * lifecycle utility from `lib/lifecycle.js`.
  *
  * @module @centralping/ergo-router
- * @version 0.1.0
  * @since 0.1.0
  * @requires ./lib/router.js
  * @requires ./lib/lifecycle.js
  *
  * @example
+ * import http from 'node:http';
  * import createRouter from '@centralping/ergo-router';
  *
  * const router = createRouter({
@@ -21,11 +21,11 @@
  * // Declarative config
  * router.get('/users/:id', {
  *   auth: {strategies: [bearerStrategy]},
- *   execute: (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})
+ *   execute: (req, res, domainAcc) => ({response: {body: {id: domainAcc.route.params.id}}})
  * });
  *
  * // Raw function handler (params as third argument)
- * router.get('/health', (req, res, params) => {
+ * router.get('/health', (req, res, domainAcc) => {
  *   res.statusCode = 200;
  *   res.end('ok');
  * });

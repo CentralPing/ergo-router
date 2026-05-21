@@ -77,12 +77,12 @@ const router = createRouter({
 });
 
 router.get('/users/:id', {
-  execute: (req, res, acc) => ({body: {id: acc.route.params.id}})
+  execute: (req, res, domainAcc) => ({response: {body: {id: domainAcc.route.params.id}}})
 });
 
 router.post('/users', {
   validate: {body: {type: 'object', properties: {name: {type: 'string'}}, required: ['name']}},
-  execute: (req, res, acc) => ({statusCode: 201, body: acc.body.parsed})
+  execute: (req, res, domainAcc) => ({response: {statusCode: 201, body: domainAcc.body.parsed}})
 });
 
 router.listen(3000, () => console.log('Listening on :3000'));
@@ -116,26 +116,40 @@ router.delete(path, config)
 
 | Key | Description | Standard |
 |---|---|---|
-| `execute` | Route handler function (required) | -- |
+| `execute` | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required) | -- |
 | `validate` | JSON Schema for body/query validation | -- |
-| `accepts` | Content negotiation override | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5) |
-| `authorization` | Auth strategy override | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617) |
-| `timeout` | Request timeout override | -- |
-| `precondition` | 428 enforcement | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3) |
-| `rateLimit` | Per-route rate limit override | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4) |
+| `accepts` | Content negotiation options or `false` | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5) |
+| `auth` | Authorization strategy options or `false` | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617) |
+| `csrf` | CSRF options or `false` | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) |
+| `body` | Body parsing options or `false` (auto for POST/PUT/PATCH) | [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578) |
+| `cookie` | Cookie parsing options or `false` | [RFC 6265](https://www.rfc-editor.org/rfc/rfc6265) |
+| `url` | URL parsing options or `false` (auto for GET/DELETE) | -- |
+| `logger` | Request logging options or `false` | -- |
+| `timeout` | Request timeout options or `false` | -- |
+| `compress` | Response compression options or `false` | [RFC 9110 &sect;12.5.3](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.3) |
+| `securityHeaders` | Security header options or `false` | [RFC 6797](https://www.rfc-editor.org/rfc/rfc6797) |
+| `cacheControl` | Cache-Control options or `false` | [RFC 9111](https://www.rfc-editor.org/rfc/rfc9111) |
+| `jsonApiQuery` | JSON:API query parsing options or `false` | [JSON:API](https://jsonapi.org/) |
+| `preconditionRequired` | 428 enforcement for PUT/PATCH or `false` | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3) |
+| `prefer` | Prefer header parsing options or `false` | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240) |
+| `rateLimit` | Per-route rate limit options or `false` | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4) |
 
-### `graceful(server, options?)`
+### `graceful(handler, options?)`
 
-Graceful shutdown helper. Stops accepting new connections and drains in-flight requests.
+Creates an HTTP server with graceful lifecycle management. Starts listening after optional startup hooks and handles SIGTERM/SIGINT with connection draining.
 
 ```js
 import createRouter, {graceful} from '@centralping/ergo-router';
+
 const router = createRouter({...});
-const server = router.listen(3000);
-graceful(server);
+const {server, shutdown} = await graceful(router.handle(), {
+  port: 3000,
+  onStartup: async ({log}) => { /* connect DB, etc. */ },
+  onShutdown: async ({log, signal}) => { /* cleanup */ }
+});
 ```
 
-See the [full API reference](https://centralping.github.io/api/ergo-router/) for detailed options and examples.
+See the [full API reference](https://centralping.github.io/packages/ergo-router/) for detailed options and examples.
 
 ## Standards Compliance
 
@@ -150,8 +164,8 @@ See the [full API reference](https://centralping.github.io/api/ergo-router/) for
 ## Documentation
 
 - [Getting Started](https://centralping.github.io/getting-started/)
-- [API Reference](https://centralping.github.io/api/ergo-router/)
-- [Architecture & Design](https://centralping.github.io/architecture/)
+- [API Reference](https://centralping.github.io/packages/ergo-router/)
+- [Fast Fail Pipeline](https://centralping.github.io/concepts/fast-fail/)
 
 ## Development
 
