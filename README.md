@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-wordmark-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="assets/logo-wordmark-light.svg">
-    <img alt="ergo-router" src="assets/logo-wordmark-light.svg" width="360">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CentralPing/ergo-router/main/assets/logo-wordmark-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CentralPing/ergo-router/main/assets/logo-wordmark-light.svg">
+    <img alt="ergo-router" src="https://raw.githubusercontent.com/CentralPing/ergo-router/main/assets/logo-wordmark-light.svg" width="360">
   </picture>
 </p>
 
@@ -11,7 +11,7 @@
 [![npm version](https://img.shields.io/npm/v/@centralping/ergo-router.svg)](https://www.npmjs.com/package/@centralping/ergo-router)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/CentralPing/ergo-router/badge)](https://scorecard.dev/viewer/?uri=github.com/CentralPing/ergo-router)
 [![Node.js >=22](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/CentralPing/ergo-router/blob/main/LICENSE)
 
 A **REST-compliant router** for [ergo](https://github.com/CentralPing/ergo) with strict Fast Fail semantics. Provides path matching via [`find-my-way`](https://github.com/delvedor/find-my-way), automatic REST compliance (405+Allow, HEAD, OPTIONS, PATCH enforcement), transport-level security, and seamless integration with ergo's composable middleware pipeline.
 
