@@ -6,7 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- CI `peer-compat` job that validates the peer dependency contract against published `@centralping/ergo` versions (minimum and newest). (#35)
+- Import surface smoke test (`lib/peer-surface.spec.unit.js`) that asserts every `@centralping/ergo` import used by ergo-router is available at module load time. (#35)
 - Contract tests for PATCH `application/merge-patch+json` and `application/json-patch+json` body parsing through declarative pipeline routes. (#36)
+
+### Changed
+
+- Bounded `@centralping/ergo` peer dependency range from `>=0.1.0-beta.3` (unbounded upper) to `>=0.1.0-beta.3 <0.2.0`. (#35)
 
 ### Fixed
 
