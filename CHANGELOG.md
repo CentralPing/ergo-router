@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-beta.2] - 2026-05-29
+
+### Added
+
+- Idempotency pipeline key in pipeline builder for deduplicating repeated requests.
+
+---
+
 ## [0.1.0-beta.1] - 2026-05-20
 
 ### Changed
