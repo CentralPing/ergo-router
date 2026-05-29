@@ -54,7 +54,7 @@ Every early exit (429, 403, 404, 405, 415, preflight 204) includes security head
 ## Installation
 
 ```bash
-npm install @centralping/ergo-router @centralping/ergo find-my-way
+npm install @centralping/ergo-router @centralping/ergo
 ```
 
 Requires **Node.js >= 22**. `@centralping/ergo` is a peer dependency.
@@ -77,12 +77,12 @@ const router = createRouter({
 });
 
 router.get('/users/:id', {
-  execute: (req, res, domainAcc) => ({response: {body: {id: domainAcc.route.params.id}}})
+  execute: (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})
 });
 
 router.post('/users', {
   validate: {body: {type: 'object', properties: {name: {type: 'string'}}, required: ['name']}},
-  execute: (req, res, domainAcc) => ({response: {statusCode: 201, body: domainAcc.body.parsed}})
+  execute: (req, res, acc) => ({response: {statusCode: 201, body: acc.body.parsed}})
 });
 
 router.listen(3000, () => console.log('Listening on :3000'));
@@ -133,6 +133,8 @@ router.delete(path, config)
 | `preconditionRequired` | 428 enforcement for PUT/PATCH or `false` | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3) |
 | `prefer` | Prefer header parsing options or `false` | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240) |
 | `rateLimit` | Per-route rate limit options or `false` | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4) |
+
+The `execute` function receives four arguments: `(req, res, domainAcc, responseAcc)`. Most handlers only need the domain accumulator (`acc` in the examples above) which carries route params, parsed body, auth identity, and other middleware outputs. The response accumulator is available as the 4th argument for advanced use cases — see the [Architecture](https://centralping.github.io/concepts/architecture/) page for the full two-accumulator model.
 
 ### `graceful(handler, options?)`
 
