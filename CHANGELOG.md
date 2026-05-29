@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Bounded `@centralping/ergo` peer dependency range from `>=0.1.0-beta.3` (unbounded upper) to `>=0.1.0-beta.3 <0.2.0`. (#35)
+- Bounded `@centralping/ergo` peer dependency range to `>=0.1.0-beta.4 <0.2.0` (was unbounded `>=0.1.0-beta.3`). Floor bumped from beta.3 to beta.4 for PATCH content-type body parsing support. (#35)
 
 ### Fixed
 

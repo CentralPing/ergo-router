@@ -43,6 +43,7 @@ jobs:
     permissions:
       contents: read
     strategy:
+      fail-fast: false
       matrix:
         ergo-version: [minimum, newest]
     steps:
