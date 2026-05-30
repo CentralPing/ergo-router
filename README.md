@@ -181,4 +181,4 @@ npm run format      # Prettier
 
 ## License
 
-[MIT](LICENSE) &copy; 2019-present Jason Cust
+[MIT](https://github.com/CentralPing/ergo-router/blob/main/LICENSE) &copy; 2019-present Jason Cust

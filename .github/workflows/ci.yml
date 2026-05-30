@@ -38,6 +38,7 @@ jobs:
           token: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
           repository: CentralPing/centralping.github.io
           event-type: docs-update
+          client-payload: '{"package": "ergo-router", "version": "dev"}'
   peer-compat:
     runs-on: ubuntu-latest
     permissions:
