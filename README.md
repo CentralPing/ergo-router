@@ -88,6 +88,51 @@ router.post('/users', {
 router.listen(3000, () => console.log('Listening on :3000'));
 ```
 
+<details>
+<summary>TypeScript</summary>
+
+```ts
+import type {IncomingMessage, ServerResponse} from 'node:http';
+import createRouter from '@centralping/ergo-router';
+
+const router = createRouter({
+  transport: {
+    requestId: {},
+    security: {},
+    cors: {origin: 'https://myapp.com'}
+  },
+  defaults: {
+    accepts: {types: ['application/json']},
+    timeout: {ms: 30000}
+  }
+});
+
+router.get('/users/:id', {
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    acc: {route: {params: {id: string}}}
+  ) => ({response: {body: {id: acc.route.params.id}}})
+});
+
+router.post('/users', {
+  validate: {body: {type: 'object', properties: {name: {type: 'string'}}, required: ['name']}},
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    acc: {body: {parsed: {name: string}}}
+  ) => ({response: {statusCode: 201, body: acc.body.parsed}})
+});
+
+router.listen(3000, () => console.log('Listening on :3000'));
+```
+
+> **Note:** The type annotations above represent the expected types for the accumulator
+> properties. As ergo's `.d.ts` type declarations improve, these types will be inferred
+> automatically — removing the need for explicit annotations.
+
+</details>
+
 ## API Overview
 
 ### `createRouter(options?)`
