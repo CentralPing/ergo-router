@@ -38,3 +38,34 @@ jobs:
           token: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
           repository: CentralPing/centralping.github.io
           event-type: docs-update
+  peer-compat:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        ergo-version: [minimum, newest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+      - name: Remove local peer reference
+        run: npm pkg delete devDependencies.@centralping/ergo
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Resolve peer version
+        id: peer
+        run: |
+          if [ "${{ matrix.ergo-version }}" = "minimum" ]; then
+            RANGE=$(jq -r '.peerDependencies["@centralping/ergo"]' package.json)
+            VERSION=$(echo "$RANGE" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?' | head -1)
+          else
+            VERSION=$(npm view @centralping/ergo versions --json | jq -r '.[-1]')
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Install published peer
+        run: npm install --no-save "@centralping/ergo@${{ steps.peer.outputs.version }}"
+      - name: Run tests
+        run: npm test
