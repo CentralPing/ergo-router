@@ -1,6 +1,6 @@
 {
   "name": "@centralping/ergo-router",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0",
   "description": "REST-compliant router for @centralping/ergo with strict Fast Fail semantics",
   "main": "index.js",
   "type": "module",
@@ -80,7 +80,7 @@
     "find-my-way": "^9.0.0"
   },
   "peerDependencies": {
-    "@centralping/ergo": ">=0.1.0-beta.4 <0.2.0"
+    "@centralping/ergo": ">=0.1.0 <0.2.0"
   },
   "devDependencies": {
     "@centralping/ergo": "file:../ergo",
