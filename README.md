@@ -164,7 +164,7 @@ router.delete(path, config)
 | `execute` | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required) | -- |
 | `validate` | JSON Schema for body/query validation | -- |
 | `accepts` | Content negotiation options or `false` | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5) |
-| `auth` | Authorization strategy options or `false` | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617) |
+| `authorization` | Authorization strategy options or `false` | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617) |
 | `csrf` | CSRF options or `false` | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) |
 | `body` | Body parsing options or `false` (auto for POST/PUT/PATCH) | [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578) |
 | `cookie` | Cookie parsing options or `false` | [RFC 6265](https://www.rfc-editor.org/rfc/rfc6265) |
@@ -178,6 +178,15 @@ router.delete(path, config)
 | `preconditionRequired` | 428 enforcement for PUT/PATCH or `false` | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3) |
 | `prefer` | Prefer header parsing options or `false` | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240) |
 | `rateLimit` | Per-route rate limit options or `false` | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4) |
+
+#### Auto-included Middleware
+
+Some middleware is automatically included based on the HTTP method, even when not explicitly configured. Setting the key to `false` disables auto-inclusion.
+
+| Middleware | Auto-included for | Behavior |
+|---|---|---|
+| `url` | GET, DELETE | URL/query parsing is included by default for methods that do not have a request body |
+| `body` | POST, PUT, PATCH | Body parsing is included by default for methods that carry a request body |
 
 The `execute` function receives four arguments: `(req, res, domainAcc, responseAcc)`. Most handlers only need the domain accumulator (`acc` in the examples above) which carries route params, parsed body, auth identity, and other middleware outputs. The response accumulator is available as the 4th argument for advanced use cases — see the [Architecture](https://centralping.github.io/concepts/architecture/) page for the full two-accumulator model.
 

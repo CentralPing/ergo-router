@@ -20,7 +20,7 @@
  *
  * // Declarative config
  * router.get('/users/:id', {
- *   auth: {strategies: [bearerStrategy]},
+ *   authorization: {strategies: [bearerStrategy]},
  *   execute: (req, res, domainAcc) => ({response: {body: {id: domainAcc.route.params.id}}})
  * });
  *
