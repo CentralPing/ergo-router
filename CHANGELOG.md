@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Typed Router interface**: `createRouter()` returns a fully typed object with `get`, `post`, `put`, `patch`, `delete`, `use`, `mount`, `handle`, and `listen` methods instead of `object`. Route methods accept `RouteConfig` type for declarative pipeline config. (#50)
+- **`RouteConfig` typedef**: exported from `lib/pipeline-builder.js` with typed properties for all 18 pipeline keys, 3 route option keys, and a typed `execute` callback signature. (#50)
+- **Typed `graceful()` options**: `exit`, `onStartup`, `onShutdown`, and `log` parameters have specific function/object types instead of `Function`. (#50)
+- **CI type validation**: `tsconfig.check-types.json` validates generated `.d.ts` files with `strict: true` and `skipLibCheck: false`. `check-types` script added to `package.json`. (#50)
 - **Config validation at registration time**: declarative route config objects, `createRouter()` options, and `options.defaults` are validated for unknown keys with Levenshtein-based "did you mean?" suggestions. Unknown keys throw by default (`strict: true`) or warn (`strict: false`). (#49)
 - Missing or non-function `execute` in declarative route configs now throws at registration time with a descriptive error naming the route (method + path), instead of producing a 500 at request time. (#55)
 - `strict` option on `createRouter()` to control config validation strictness (default `true`).

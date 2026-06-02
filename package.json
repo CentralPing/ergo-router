@@ -37,7 +37,8 @@
     "test:watch": "node --test --watch \"**/*.spec.unit.js\" \"**/*.spec.func.js\"",
     "preversion": "npm test",
     "types": "tsc",
-    "prepublishOnly": "npm test && npm run types",
+    "check-types": "tsc && tsc --project tsconfig.check-types.json",
+    "prepublishOnly": "npm test && npm run check-types",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
