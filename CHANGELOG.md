@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`use` config key for custom per-route middleware**: declarative route configs accept a `use` array of `[fn, setPath]` tuples (or bare functions) that run after Stage 3 (Validation) and before Stage 4 (Execution). Router `defaults.use` entries are concatenated before route-level entries; `use: false` disables all custom middleware. (#51)
 - **Typed Router interface**: `createRouter()` returns a fully typed object with `get`, `post`, `put`, `patch`, `delete`, `use`, `mount`, `handle`, and `listen` methods instead of `object`. Route methods accept `RouteConfig` type for declarative pipeline config. (#50)
 - **`RouteConfig` typedef**: exported from `lib/pipeline-builder.js` with typed properties for all 18 pipeline keys, 3 route option keys, and a typed `execute` callback signature. (#50)
 - **Typed `graceful()` options**: `exit`, `onStartup`, `onShutdown`, and `log` parameters have specific function/object types instead of `Function`. (#50)
