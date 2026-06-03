@@ -14,6 +14,10 @@
       "types": "./types/lib/transport/index.d.ts",
       "default": "./lib/transport/index.js"
     },
+    "./openapi": {
+      "types": "./types/openapi.d.ts",
+      "default": "./openapi.js"
+    },
     "./lib/*": {
       "types": "./types/lib/*.d.ts",
       "default": "./lib/*.js"
@@ -21,6 +25,7 @@
   },
   "files": [
     "index.js",
+    "openapi.js",
     "lib/",
     "types/",
     "!**/*.spec.*.js",
@@ -86,6 +91,7 @@
   "devDependencies": {
     "@centralping/ergo": "file:../ergo",
     "@eslint/js": "^10.0.1",
+    "@seriousme/openapi-schema-validator": "^2.9.0",
     "@types/node": "^25.9.1",
     "c8": "^11.0.0",
     "eslint": "^10.0.3",

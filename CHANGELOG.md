@@ -14,6 +14,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **OpenAPI 3.1 specification generation.** `generateOpenAPI(router, options)` produces a
+  standards-compliant OpenAPI 3.1 document from registered route metadata. Extracts validation
+  schemas (params, query, body), authorization strategies, content types, and manual `openapi`
+  annotations. Resolves config keys against router defaults using the same precedence as the
+  pipeline builder. Available via `@centralping/ergo-router/openapi` sub-path export. (#54)
+- **`openapi` annotation key for declarative route configs.** Pass-through object for per-route
+  OpenAPI metadata (summary, description, tags, operationId, deprecated, responses,
+  externalDocs). Validated at registration time as a plain object. (#54)
+- **Route metadata registry (`router._routes`).** Stores `{method, path, config}` entries for
+  all registered routes, enabling introspection without coupling to the routing engine. (#54)
 - **`use` config key for custom per-route middleware**: declarative route configs accept a `use` array of `[fn, setPath]` tuples (or bare functions) that run after Stage 3 (Validation) and before Stage 4 (Execution). Router `defaults.use` entries are concatenated before route-level entries; `use: false` disables all custom middleware. (#51)
 - **Pipeline debug tracing.** Pass `{debug: true}` in router options to enable pipeline
   tracing. When enabled, `responseAcc._trace` is initialized on each request. The

@@ -108,20 +108,16 @@ const router = createRouter({
 });
 
 router.get('/users/:id', {
-  execute: (
-    req: IncomingMessage,
-    res: ServerResponse,
-    acc: {route: {params: {id: string}}}
-  ) => ({response: {body: {id: acc.route.params.id}}})
+  execute: (req: IncomingMessage, res: ServerResponse, acc: {route: {params: {id: string}}}) => ({
+    response: {body: {id: acc.route.params.id}}
+  })
 });
 
 router.post('/users', {
   validate: {body: {type: 'object', properties: {name: {type: 'string'}}, required: ['name']}},
-  execute: (
-    req: IncomingMessage,
-    res: ServerResponse,
-    acc: {body: {parsed: {name: string}}}
-  ) => ({response: {statusCode: 201, body: acc.body.parsed}})
+  execute: (req: IncomingMessage, res: ServerResponse, acc: {body: {parsed: {name: string}}}) => ({
+    response: {statusCode: 201, body: acc.body.parsed}
+  })
 });
 
 router.listen(3000, () => console.log('Listening on :3000'));
@@ -139,55 +135,56 @@ router.listen(3000, () => console.log('Listening on :3000'));
 
 Creates a new router instance with optional transport and default middleware configuration.
 
-| Option | Description |
-|---|---|
-| `transport.requestId` | Request ID generation config |
-| `transport.security` | Security headers (HSTS, CSP, etc.) |
-| `transport.cors` | CORS configuration |
-| `transport.rateLimit` | Rate limiting (sliding window) |
-| `defaults.*` | Default middleware options applied to all routes |
+| Option                | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `transport.requestId` | Request ID generation config                     |
+| `transport.security`  | Security headers (HSTS, CSP, etc.)               |
+| `transport.cors`      | CORS configuration                               |
+| `transport.rateLimit` | Rate limiting (sliding window)                   |
+| `defaults.*`          | Default middleware options applied to all routes |
 
 ### Route Methods
 
 ```js
-router.get(path, config)
-router.post(path, config)
-router.put(path, config)
-router.patch(path, config)
-router.delete(path, config)
+router.get(path, config);
+router.post(path, config);
+router.put(path, config);
+router.patch(path, config);
+router.delete(path, config);
 ```
 
 ### Route Config
 
-| Key | Description | Standard |
-|---|---|---|
-| `execute` | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required) | -- |
-| `validate` | JSON Schema for body/query validation | -- |
-| `accepts` | Content negotiation options or `false` | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5) |
-| `authorization` | Authorization strategy options or `false` | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617) |
-| `csrf` | CSRF options or `false` | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) |
-| `body` | Body parsing options or `false` (auto for POST/PUT/PATCH) | [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578) |
-| `cookie` | Cookie parsing options or `false` | [RFC 6265](https://www.rfc-editor.org/rfc/rfc6265) |
-| `url` | URL parsing options or `false` (auto for GET/DELETE) | -- |
-| `logger` | Request logging options or `false` | -- |
-| `timeout` | Request timeout options or `false` | -- |
-| `compress` | Response compression options or `false` | [RFC 9110 &sect;12.5.3](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.3) |
-| `securityHeaders` | Security header options or `false` | [RFC 6797](https://www.rfc-editor.org/rfc/rfc6797) |
-| `cacheControl` | Cache-Control options or `false` | [RFC 9111](https://www.rfc-editor.org/rfc/rfc9111) |
-| `jsonApiQuery` | JSON:API query parsing options or `false` | [JSON:API](https://jsonapi.org/) |
-| `preconditionRequired` | 428 enforcement for PUT/PATCH or `false` | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3) |
-| `prefer` | Prefer header parsing options or `false` | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240) |
-| `rateLimit` | Per-route rate limit options or `false` | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4) |
-| `use` | Custom middleware array `[fn, setPath]` tuples or bare functions, or `false` | -- |
+| Key                    | Description                                                                          | Standard                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `execute`              | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required) | --                                                                                                                  |
+| `validate`             | JSON Schema for body/query validation                                                | --                                                                                                                  |
+| `accepts`              | Content negotiation options or `false`                                               | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5)                                          |
+| `authorization`        | Authorization strategy options or `false`                                            | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617)              |
+| `csrf`                 | CSRF options or `false`                                                              | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) |
+| `body`                 | Body parsing options or `false` (auto for POST/PUT/PATCH)                            | [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578)                                                                  |
+| `cookie`               | Cookie parsing options or `false`                                                    | [RFC 6265](https://www.rfc-editor.org/rfc/rfc6265)                                                                  |
+| `url`                  | URL parsing options or `false` (auto for GET/DELETE)                                 | --                                                                                                                  |
+| `logger`               | Request logging options or `false`                                                   | --                                                                                                                  |
+| `timeout`              | Request timeout options or `false`                                                   | --                                                                                                                  |
+| `compress`             | Response compression options or `false`                                              | [RFC 9110 &sect;12.5.3](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.3)                                      |
+| `securityHeaders`      | Security header options or `false`                                                   | [RFC 6797](https://www.rfc-editor.org/rfc/rfc6797)                                                                  |
+| `cacheControl`         | Cache-Control options or `false`                                                     | [RFC 9111](https://www.rfc-editor.org/rfc/rfc9111)                                                                  |
+| `jsonApiQuery`         | JSON:API query parsing options or `false`                                            | [JSON:API](https://jsonapi.org/)                                                                                    |
+| `preconditionRequired` | 428 enforcement for PUT/PATCH or `false`                                             | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3)                                                |
+| `prefer`               | Prefer header parsing options or `false`                                             | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240)                                                                  |
+| `rateLimit`            | Per-route rate limit options or `false`                                              | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4)                                                |
+| `use`                  | Custom middleware array `[fn, setPath]` tuples or bare functions, or `false`         | --                                                                                                                  |
+| `openapi`              | OpenAPI annotation object (summary, description, tags, responses, etc.)              | [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0)                                                                 |
 
 #### Auto-included Middleware
 
 Some middleware is automatically included based on the HTTP method, even when not explicitly configured. Setting the key to `false` disables auto-inclusion.
 
-| Middleware | Auto-included for | Behavior |
-|---|---|---|
-| `url` | GET, DELETE | URL/query parsing is included by default for methods that do not have a request body |
-| `body` | POST, PUT, PATCH | Body parsing is included by default for methods that carry a request body |
+| Middleware | Auto-included for | Behavior                                                                             |
+| ---------- | ----------------- | ------------------------------------------------------------------------------------ |
+| `url`      | GET, DELETE       | URL/query parsing is included by default for methods that do not have a request body |
+| `body`     | POST, PUT, PATCH  | Body parsing is included by default for methods that carry a request body            |
 
 The `execute` function receives four arguments: `(req, res, domainAcc, responseAcc)`. Most handlers only need the domain accumulator (`acc` in the examples above) which carries route params, parsed body, auth identity, and other middleware outputs. The response accumulator is available as the 4th argument for advanced use cases — see the [Architecture](https://centralping.github.io/concepts/architecture/) page for the full two-accumulator model.
 
@@ -208,15 +205,63 @@ const {server, shutdown} = await graceful(router.handle(), {
 
 See the [full API reference](https://centralping.github.io/packages/ergo-router/) for detailed options and examples.
 
+### `generateOpenAPI(router, options?)`
+
+Generates an [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0) specification document from a router's registered routes. Available via the `@centralping/ergo-router/openapi` sub-path export.
+
+```js
+import createRouter from '@centralping/ergo-router';
+import generateOpenAPI from '@centralping/ergo-router/openapi';
+
+const router = createRouter({
+  defaults: {
+    accepts: {types: ['application/json']},
+    authorization: {strategies: [{type: 'Bearer', authorizer: verifyToken}]}
+  }
+});
+
+router.get('/users/:id', {
+  openapi: {
+    summary: 'Get user by ID',
+    tags: ['Users'],
+    responses: {
+      200: {description: 'User found'},
+      404: {description: 'User not found'}
+    }
+  },
+  validate: {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}},
+  execute: (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})
+});
+
+const spec = generateOpenAPI(router, {
+  title: 'My API',
+  version: '1.0.0',
+  description: 'REST API with OpenAPI spec',
+  servers: [{url: 'https://api.example.com'}]
+});
+// spec is a valid OpenAPI 3.1 document
+```
+
+The generator automatically extracts:
+
+- **Path parameters** from `:param` patterns (with schema from `validate.params`)
+- **Query parameters** from `validate.query`
+- **Request body** from `validate.body` (POST/PUT/PATCH only)
+- **Security schemes** from `authorization.strategies`
+- **Content types** from `accepts.types`
+
+Config keys are resolved against `router.defaults` using the same precedence as the pipeline builder (route > defaults > omitted).
+
 ## Standards Compliance
 
-| RFC / Standard | Description | ergo-router Feature |
-|---|---|---|
-| [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) | HTTP Semantics | 405+Allow, HEAD/OPTIONS/PATCH enforcement |
-| [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) | Problem Details for HTTP APIs | Structured error responses |
-| [RFC 6797](https://www.rfc-editor.org/rfc/rfc6797) | HTTP Strict Transport Security | Transport security headers |
-| [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) | Additional HTTP Status Codes | Rate limiting (429) |
-| [Fetch Standard](https://fetch.spec.whatwg.org/#http-cors-protocol) | CORS Protocol | Transport CORS handling |
+| RFC / Standard                                                      | Description                    | ergo-router Feature                       |
+| ------------------------------------------------------------------- | ------------------------------ | ----------------------------------------- |
+| [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110)                  | HTTP Semantics                 | 405+Allow, HEAD/OPTIONS/PATCH enforcement |
+| [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457)                  | Problem Details for HTTP APIs  | Structured error responses                |
+| [RFC 6797](https://www.rfc-editor.org/rfc/rfc6797)                  | HTTP Strict Transport Security | Transport security headers                |
+| [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585)                  | Additional HTTP Status Codes   | Rate limiting (429)                       |
+| [Fetch Standard](https://fetch.spec.whatwg.org/#http-cors-protocol) | CORS Protocol                  | Transport CORS handling                   |
+| [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0)                 | API Description Format         | Route-based spec generation               |
 
 ## Documentation
 
