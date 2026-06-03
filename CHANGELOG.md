@@ -12,17 +12,6 @@ All notable changes to this project will be documented in this file.
   `auto-wrap.js` ends the span after `send()` with `http.status_code` attribute and
   appropriate OTEL status. Supports all code paths: success, error, `catchHandler`, and
   `noSend`. Zero overhead when no OTEL SDK is registered (no-op spans). (#63)
-
-### Fixed
-
-- **`instance` field on all error paths.** The RFC 9457 `instance` field
-  (`urn:uuid:{requestId}`) is now populated from the `x-request-id` response header on all
-  auto-wrap error paths — pipeline breaks, caught errors (both default and `catchHandler`),
-  and `endWithProblem` short-circuit responses (404, 405, 415, 429, 500). Previously,
-  `instance` was only populated in the default `catch` block. (#59)
-
-### Added
-
 - **OpenAPI 3.1 specification generation.** `generateOpenAPI(router, options)` produces a
   standards-compliant OpenAPI 3.1 document from registered route metadata. Extracts validation
   schemas (params, query, body), authorization strategies, content types, and manual `openapi`
@@ -60,6 +49,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **`instance` field on all error paths.** The RFC 9457 `instance` field
+  (`urn:uuid:{requestId}`) is now populated from the `x-request-id` response header on all
+  auto-wrap error paths — pipeline breaks, caught errors (both default and `catchHandler`),
+  and `endWithProblem` short-circuit responses (404, 405, 415, 429, 500). Previously,
+  `instance` was only populated in the default `catch` block. (#59)
 - Bumped `@centralping/ergo` peer dependency floor from `>=0.1.0-beta.1` to `>=0.1.0-beta.3` to match actual import surface (`idempotency` export requires beta.3). (#34)
 - README license link changed from relative path to absolute URL (broken on npm). (#40)
 - CI dispatch now includes `client-payload` identifying ergo-router for docs site deploy. (#40)
