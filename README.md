@@ -178,6 +178,7 @@ router.delete(path, config)
 | `preconditionRequired` | 428 enforcement for PUT/PATCH or `false` | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3) |
 | `prefer` | Prefer header parsing options or `false` | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240) |
 | `rateLimit` | Per-route rate limit options or `false` | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4) |
+| `use` | Custom middleware array `[fn, setPath]` tuples or bare functions, or `false` | -- |
 
 #### Auto-included Middleware
 
