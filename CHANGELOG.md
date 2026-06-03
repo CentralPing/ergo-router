@@ -4,9 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`instance` field on all error paths.** The RFC 9457 `instance` field
+  (`urn:uuid:{requestId}`) is now populated from the `x-request-id` response header on all
+  auto-wrap error paths — pipeline breaks, caught errors (both default and `catchHandler`),
+  and `endWithProblem` short-circuit responses (404, 405, 415, 429, 500). Previously,
+  `instance` was only populated in the default `catch` block. (#59)
+
 ### Added
 
 - **`use` config key for custom per-route middleware**: declarative route configs accept a `use` array of `[fn, setPath]` tuples (or bare functions) that run after Stage 3 (Validation) and before Stage 4 (Execution). Router `defaults.use` entries are concatenated before route-level entries; `use: false` disables all custom middleware. (#51)
+- **Pipeline debug tracing.** Pass `{debug: true}` in router options to enable pipeline
+  tracing. When enabled, `responseAcc._trace` is initialized on each request. The
+  `compose-with` serial and concurrent runners record each middleware label in `steps` and set
+  `breakAt` to the label that triggered a pipeline break. On error responses (>= 400),
+  `_trace` appears as an RFC 9457 extension member. (#59)
 - **Typed Router interface**: `createRouter()` returns a fully typed object with `get`, `post`, `put`, `patch`, `delete`, `use`, `mount`, `handle`, and `listen` methods instead of `object`. Route methods accept `RouteConfig` type for declarative pipeline config. (#50)
 - **`RouteConfig` typedef**: exported from `lib/pipeline-builder.js` with typed properties for all 18 pipeline keys, 3 route option keys, and a typed `execute` callback signature. (#50)
 - **Typed `graceful()` options**: `exit`, `onStartup`, `onShutdown`, and `log` parameters have specific function/object types instead of `Function`. (#50)
