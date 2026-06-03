@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **OpenTelemetry pipeline-builder integration.** `tracing` config key enables W3C trace
+  context propagation and per-request `ergo.pipeline` spans via `@centralping/ergo`'s tracing
+  middleware. Placed first in Stage 1 (before logger) for trace ID correlation in log output.
+  `auto-wrap.js` ends the span after `send()` with `http.status_code` attribute and
+  appropriate OTEL status. Supports all code paths: success, error, `catchHandler`, and
+  `noSend`. Zero overhead when no OTEL SDK is registered (no-op spans). (#63)
+
 ### Fixed
 
 - **`instance` field on all error paths.** The RFC 9457 `instance` field
