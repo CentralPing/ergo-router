@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Config value type validation at registration time.** Declarative route config values,
+  `createRouter()` options, and `options.defaults` are now validated for correct types at
+  registration time. Invalid values (e.g., `timeout: 'five seconds'`, `rateLimit: 42`,
+  `validate: [1,2,3]`) throw immediately with descriptive error messages instead of causing
+  cryptic runtime errors at request time. Pipeline middleware keys accept `boolean | object`;
+  route option keys enforce their specific types (`send`: object, `noSend`: boolean,
+  `catchHandler`: function); router option keys enforce per-key types. Value type errors
+  always throw regardless of `strict` setting. (#69)
+
 ---
 
 ## [0.2.0] - 2026-06-04
