@@ -158,6 +158,7 @@ router.delete(path, config);
 | Key                    | Description                                                                          | Standard                                                                                                            |
 | ---------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | `execute`              | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required) | --                                                                                                                  |
+| `tracing`              | OpenTelemetry tracing options or `false`                                             | [W3C Trace Context](https://www.w3.org/TR/trace-context/)                                                           |
 | `validate`             | JSON Schema for body/query validation                                                | --                                                                                                                  |
 | `accepts`              | Content negotiation options or `false`                                               | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5)                                          |
 | `authorization`        | Authorization strategy options or `false`                                            | [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750), [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617)              |
@@ -200,6 +201,31 @@ const {server, shutdown} = await graceful(router.handle(), {
   port: 3000,
   onStartup: async ({log}) => { /* connect DB, etc. */ },
   onShutdown: async ({log, signal}) => { /* cleanup */ }
+});
+```
+
+#### OpenTelemetry SDK Lifecycle
+
+When using `tracing`, manage the OTEL SDK via `graceful()` hooks:
+
+```js
+import {NodeSDK} from '@opentelemetry/sdk-node';
+import createRouter, {graceful} from '@centralping/ergo-router';
+
+const sdk = new NodeSDK({
+  /* exporters, instrumentations */
+});
+
+const router = createRouter({defaults: {tracing: true}});
+// ... register routes ...
+
+await graceful(router.handle(), {
+  onStartup: async () => {
+    sdk.start();
+  },
+  onShutdown: async () => {
+    await sdk.shutdown();
+  }
 });
 ```
 

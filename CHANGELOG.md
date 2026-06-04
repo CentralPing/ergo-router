@@ -4,16 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### Fixed
-
-- **`instance` field on all error paths.** The RFC 9457 `instance` field
-  (`urn:uuid:{requestId}`) is now populated from the `x-request-id` response header on all
-  auto-wrap error paths — pipeline breaks, caught errors (both default and `catchHandler`),
-  and `endWithProblem` short-circuit responses (404, 405, 415, 429, 500). Previously,
-  `instance` was only populated in the default `catch` block. (#59)
-
 ### Added
 
+- **OpenTelemetry pipeline-builder integration.** `tracing` config key enables W3C trace
+  context propagation and per-request `ergo.pipeline` spans via `@centralping/ergo`'s tracing
+  middleware. Placed first in Stage 1 (before logger) for trace ID correlation in log output.
+  `auto-wrap.js` ends the span after `send()` with `http.status_code` attribute and
+  appropriate OTEL status. Supports all code paths: success, error, `catchHandler`, and
+  `noSend`. Zero overhead when no OTEL SDK is registered (no-op spans). (#63)
 - **OpenAPI 3.1 specification generation.** `generateOpenAPI(router, options)` produces a
   standards-compliant OpenAPI 3.1 document from registered route metadata. Extracts validation
   schemas (params, query, body), authorization strategies, content types, and manual `openapi`
@@ -47,10 +45,16 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **BREAKING**: Renamed route config key `auth` to `authorization` for consistency with the `authorization()` middleware factory name. The accumulator path `acc.auth` is unchanged. (#53)
+- Bumped `@centralping/ergo` peer dependency range to `>=0.2.0 <0.3.0` (was `>=0.1.0 <0.2.0`). Floor bumped to 0.2.0 for OpenTelemetry tracing imports (`tracing` main entry, `statusFromHttp` from `lib/tracing`). (#63)
 - Bounded `@centralping/ergo` peer dependency range to `>=0.1.0-beta.4 <0.2.0` (was unbounded `>=0.1.0-beta.3`). Floor bumped from beta.3 to beta.4 for PATCH content-type body parsing support. (#35)
 
 ### Fixed
 
+- **`instance` field on all error paths.** The RFC 9457 `instance` field
+  (`urn:uuid:{requestId}`) is now populated from the `x-request-id` response header on all
+  auto-wrap error paths — pipeline breaks, caught errors (both default and `catchHandler`),
+  and `endWithProblem` short-circuit responses (404, 405, 415, 429, 500). Previously,
+  `instance` was only populated in the default `catch` block. (#59)
 - Bumped `@centralping/ergo` peer dependency floor from `>=0.1.0-beta.1` to `>=0.1.0-beta.3` to match actual import surface (`idempotency` export requires beta.3). (#34)
 - README license link changed from relative path to absolute URL (broken on npm). (#40)
 - CI dispatch now includes `client-payload` identifying ergo-router for docs site deploy. (#40)

@@ -86,7 +86,7 @@
     "find-my-way": "^9.0.0"
   },
   "peerDependencies": {
-    "@centralping/ergo": ">=0.1.0 <0.2.0"
+    "@centralping/ergo": ">=0.2.0 <0.3.0"
   },
   "devDependencies": {
     "@centralping/ergo": "file:../ergo",
