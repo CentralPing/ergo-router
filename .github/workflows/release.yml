@@ -21,6 +21,7 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
       - run: npm install --ignore-scripts --prefix "$GITHUB_WORKSPACE/.ergo-peer"
+      - run: npm run types --prefix "$GITHUB_WORKSPACE/.ergo-peer"
       - run: npm ci --ignore-scripts
       - run: npm test
       - name: Determine dist-tag
