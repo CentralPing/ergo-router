@@ -1,6 +1,6 @@
 {
   "name": "@centralping/ergo-router",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "REST-compliant router for @centralping/ergo with strict Fast Fail semantics",
   "main": "index.js",
   "type": "module",

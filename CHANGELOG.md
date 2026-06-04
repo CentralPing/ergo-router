@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] - 2026-06-04
+
 ### Added
 
 - **OpenTelemetry pipeline-builder integration.** `tracing` config key enables W3C trace
