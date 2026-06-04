@@ -45,6 +45,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **BREAKING**: Renamed route config key `auth` to `authorization` for consistency with the `authorization()` middleware factory name. The accumulator path `acc.auth` is unchanged. (#53)
+- Bumped `@centralping/ergo` peer dependency range to `>=0.2.0 <0.3.0` (was `>=0.1.0 <0.2.0`). Floor bumped to 0.2.0 for OpenTelemetry tracing imports (`tracing` main entry, `statusFromHttp` from `lib/tracing`). (#63)
 - Bounded `@centralping/ergo` peer dependency range to `>=0.1.0-beta.4 <0.2.0` (was unbounded `>=0.1.0-beta.3`). Floor bumped from beta.3 to beta.4 for PATCH content-type body parsing support. (#35)
 
 ### Fixed
