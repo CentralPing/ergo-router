@@ -41,8 +41,8 @@
     "test": "c8 node --test --test-force-exit \"**/*.spec.unit.js\" \"**/*.spec.func.js\"",
     "test:watch": "node --test --watch \"**/*.spec.unit.js\" \"**/*.spec.func.js\"",
     "preversion": "npm test",
-    "types": "tsc",
-    "check-types": "tsc && tsc --project tsconfig.check-types.json",
+    "types": "tsc && cp -r types-override/. types/",
+    "check-types": "npm run types && tsc --project tsconfig.check-types.json",
     "prepublishOnly": "npm test && npm run check-types",
     "prepare": "simple-git-hooks"
   },

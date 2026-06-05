@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Typed `RouteConfig` with generic accumulator.** Hand-written TypeScript declaration overrides
+  (`types-override/`) provide precise type information for declarative route configuration.
+  Each middleware key is typed with its specific ergo option interface (e.g., `AcceptsOptions`,
+  `BodyOptions`) instead of generic `object | boolean`. The `execute` callback's domain
+  accumulator accepts a generic type parameter `RouteConfig<A>` (defaults to
+  `Record<string, unknown>`), enabling consumers to annotate their accumulator shape for
+  type-safe property access. `RouterOptions`, `TransportOptions`, `GracefulOptions`, and the
+  `Router` instance are also fully typed. Adopts the `types-override` pattern established in
+  `@centralping/ergo`. (#68)
+
 ### Changed
 
 - **Config value type validation at registration time.** Declarative route config values,
