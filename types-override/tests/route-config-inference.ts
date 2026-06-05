@@ -121,10 +121,10 @@ function testDefaultAccumulator() {
 function testRouterOptions() {
   const options: RouterOptions = {
     transport: {
-      requestId: {trustProxy: true, headerName: 'x-trace-id'},
-      security: {xFrameOptions: 'SAMEORIGIN', trustProxy: true},
+      requestId: {trustProxy: true, header: 'x-trace-id'},
+      security: {frameOptions: 'SAMEORIGIN', trustProxy: true},
       rateLimit: {max: 1000, windowMs: 60000},
-      cors: {origin: '*', allowCredentials: false, maxAge: 86400},
+      cors: {origin: '*', credentials: false, maxAge: 86400},
     },
     strictPatch: true,
     strictBody: true,

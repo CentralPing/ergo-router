@@ -33,23 +33,23 @@ import type {IncomingMessage, ServerResponse} from 'node:http';
 
 /** Options for transport-level request ID generation. */
 export interface TransportRequestIdOptions {
-  generate?: () => string;
+  header?: string;
   trustProxy?: boolean;
-  headerName?: string;
+  generate?: () => string;
+  validate?: (value: string) => boolean;
 }
 
 /** Options for transport-level security headers. */
 export interface TransportSecurityOptions {
-  contentSecurityPolicy?: string | false;
-  strictTransportSecurity?: string | false | {
+  hsts?: {
     maxAge: number;
     includeSubDomains?: boolean;
     preload?: boolean;
-  };
-  xContentTypeOptions?: string | false;
-  xFrameOptions?: string | false;
+  } | false;
+  noSniff?: boolean;
+  frameOptions?: string | false;
   referrerPolicy?: string | false;
-  xXssProtection?: string | false;
+  csp?: string | false;
   permissionsPolicy?: string | false;
   trustProxy?: boolean;
 }
@@ -64,11 +64,11 @@ export interface TransportRateLimitOptions {
 
 /** Options for transport-level CORS handling. */
 export interface TransportCorsOptions {
-  origin?: string | string[] | RegExp | ((origin: string) => boolean);
-  allowMethods?: string[];
-  allowHeaders?: string | string[] | RegExp | ((header: string) => boolean);
-  exposeHeaders?: string | string[];
-  allowCredentials?: boolean;
+  origin?: string | string[] | ((origin: string) => boolean);
+  methods?: string[];
+  allowedHeaders?: string[];
+  exposedHeaders?: string[];
+  credentials?: boolean;
   maxAge?: number;
 }
 

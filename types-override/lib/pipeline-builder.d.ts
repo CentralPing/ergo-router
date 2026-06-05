@@ -8,7 +8,7 @@ import type {RouteConfig, RouteConfigDefaults} from '../ergo-router.js';
  * @param defaults - Router-level defaults for each key
  * @returns Composed pipeline array suitable for auto-wrap
  */
-declare function buildPipeline(method: string, routeConfig: RouteConfig, defaults?: RouteConfigDefaults): any[];
+declare function buildPipeline<A extends object = Record<string, unknown>>(method: string, routeConfig: RouteConfig<A>, defaults?: RouteConfigDefaults): any[];
 
 export default buildPipeline;
 
