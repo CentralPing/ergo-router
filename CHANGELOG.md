@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`paginate` pipeline config key.** Declarative route configs accept a `paginate` key that
+  wires ergo's `paginate()` middleware into Stage 1 (Negotiation), after URL parsing.
+  Automatically includes URL parsing when active (regardless of HTTP method). When enabled,
+  `send()` receives `paginate: true` for automatic Link header and `X-Total-Count` generation.
+  Supports offset-based (`paginate: true`) and cursor-based (`paginate: {strategy: 'cursor'}`)
+  pagination strategies via ergo's pagination primitives. (#71)
+
 - **`presets.jsonApi` convenience export.** A deeply frozen `RouterOptions` object that
   enables transport-level request ID and security headers, and restricts content negotiation
   to `application/json`. Consumers spread it into `createRouter()` for one-liner JSON API
@@ -32,6 +39,8 @@ All notable changes to this project will be documented in this file.
   route option keys enforce their specific types (`send`: object, `noSend`: boolean,
   `catchHandler`: function); router option keys enforce per-key types. Value type errors
   always throw regardless of `strict` setting. (#69)
+- Bumped `@centralping/ergo` peer dependency range to `>=0.3.0 <0.4.0` (was `>=0.2.0 <0.3.0`).
+  Floor bumped to 0.3.0 for `paginate` middleware factory import. (#71)
 
 ---
 
