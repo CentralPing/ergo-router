@@ -1,4 +1,4 @@
-import type {RouterOptions, Router, GracefulOptions, GracefulResult} from './ergo-router.js';
+import type {RouterOptions, Router, Presets, GracefulOptions, GracefulResult} from './ergo-router.js';
 
 export {default} from './lib/router.js';
 
@@ -9,9 +9,12 @@ declare function graceful(
 
 export {graceful};
 
+export declare const presets: Presets;
+
 export type {
   RouterOptions,
   Router,
+  Presets,
   RouteConfig,
   RouteConfigDefaults,
   TransportOptions,

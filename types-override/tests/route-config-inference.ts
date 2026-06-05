@@ -30,6 +30,7 @@ import type {
   RouteConfig,
   RouterOptions,
   Router,
+  Presets,
   GracefulOptions,
   GracefulResult,
   TransportOptions,
@@ -229,6 +230,21 @@ function testSendOptions() {
 }
 
 // ---------------------------------------------------------------------------
+// Positive: Presets interface and const export
+// ---------------------------------------------------------------------------
+
+function testPresetsType() {
+  const p: Presets = {
+    jsonApi: {
+      transport: {requestId: {}, security: {}},
+      defaults: {accepts: {types: ['application/json']}},
+    },
+  };
+  const opts: Readonly<RouterOptions> = p.jsonApi;
+  void opts;
+}
+
+// ---------------------------------------------------------------------------
 // Negative: execute is required in RouteConfig
 // ---------------------------------------------------------------------------
 
@@ -269,5 +285,6 @@ void testBuildPipeline;
 void testCreateRouter;
 void testRouteHandlerTypes;
 void testSendOptions;
+void testPresetsType;
 void testMissingExecute;
 void testWrongOptionType;
