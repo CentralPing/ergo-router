@@ -270,6 +270,78 @@ function testWrongOptionType() {
 }
 
 // ---------------------------------------------------------------------------
+// Positive: Route methods accept RouteConfig with explicit generic
+// ---------------------------------------------------------------------------
+
+interface RouteAccumulator {
+  route: {params: {id: string}};
+  auth: {userId: string};
+}
+
+function testRouteMethodExplicitGeneric(router: Router) {
+  router.get<RouteAccumulator>('/users/:id', {
+    authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]},
+    execute: (_req, _res, acc) => {
+      const id: string = acc.route.params.id;
+      const userId: string = acc.auth.userId;
+      return {response: {body: {id, userId}}};
+    },
+  });
+
+  router.post<RouteAccumulator>('/users/:id', {
+    execute: (_req, _res, acc) => {
+      const id: string = acc.route.params.id;
+      return {response: {body: {id}}};
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Route methods infer generic from typed RouteConfig variable
+// ---------------------------------------------------------------------------
+
+function testRouteMethodInferredGeneric(router: Router) {
+  const config: RouteConfig<RouteAccumulator> = {
+    execute: (_req, _res, acc) => {
+      const id: string = acc.route.params.id;
+      return {response: {body: {id}}};
+    },
+  };
+
+  router.get('/users/:id', config);
+  router.put('/users/:id', config);
+  router.patch('/users/:id', config);
+  router.delete('/users/:id', config);
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Route methods still accept bare RouteConfig (backward compat)
+// ---------------------------------------------------------------------------
+
+function testRouteMethodDefaultGeneric(router: Router) {
+  router.get('/health', {
+    execute: (_req, _res, acc) => {
+      const value: unknown = acc.anything;
+      return {response: {body: value}};
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Negative: Typed route config rejects access to non-existent properties
+// ---------------------------------------------------------------------------
+
+function testRouteMethodGenericRejectsInvalid(router: Router) {
+  router.get<RouteAccumulator>('/users/:id', {
+    execute: (_req, _res, acc) => {
+      // @ts-expect-error — RouteAccumulator has no 'nonExistent' property
+      const bad: string = acc.nonExistent;
+      return {response: {body: bad}};
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Suppress unused-variable warnings
 // ---------------------------------------------------------------------------
 
@@ -288,3 +360,7 @@ void testSendOptions;
 void testPresetsType;
 void testMissingExecute;
 void testWrongOptionType;
+void testRouteMethodExplicitGeneric;
+void testRouteMethodInferredGeneric;
+void testRouteMethodDefaultGeneric;
+void testRouteMethodGenericRejectsInvalid;
