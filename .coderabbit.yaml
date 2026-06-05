@@ -1,17 +1,276 @@
 language: en-US
+early_access: true
+
+tone_instructions: >
+  Focus on REST/RFC compliance, transport security (request-ID validation, 5xx
+  redaction, HSTS HTTPS detection), and correct integration with @centralping/ergo
+  shared primitives. Verify auto-wrap pattern, pipeline builder stage ordering,
+  and peer dependency compatibility.
+
 reviews:
   profile: assertive
   request_changes_workflow: true
   high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: true
+  review_details: true
   poem: false
   review_status: true
+  related_issues: true
+  related_prs: true
+  assess_linked_issues: true
+  estimate_code_review_effort: true
+  prompt_for_ai_agents: true
+  abort_on_close: true
+
   path_filters:
     - "!assets/**"
+
+  path_instructions:
+    - path: "lib/transport/**"
+      instructions: >
+        Transport-level concerns that run before routing (Fast Fail). Must be thin
+        adapters over @centralping/ergo shared primitives from lib/. Transport
+        short-circuits produce RFC 9457 Problem Details bodies via error-response.js.
+        Request IDs are the canonical source — downstream reads via res.getHeader().
+        Never mutate req objects.
+
+    - path: "lib/pipeline-builder.js"
+      instructions: >
+        Assembles the Fast Fail four-stage pipeline from declarative route config.
+        Stage order is Negotiation > Authorization > Validation > Execution.
+        Resolution precedence: route config > router defaults > omitted. Setting a
+        key to false explicitly disables it. Verify new keys are added to the correct
+        stage and to VALID_CONFIG_KEYS / VALID_DEFAULTS_KEYS in validate-config.js.
+
+    - path: "lib/auto-wrap.js"
+      instructions: >
+        Wraps every route pipeline with handler() and send() from @centralping/ergo.
+        Seeds route params at acc.route.params. Handles span lifecycle for OpenTelemetry.
+        5xx errors must have detail redacted. Verify res.emit('error') guard and
+        attachInstance on all error paths.
+
+    - path: "lib/router.js"
+      instructions: >
+        Core routing using find-my-way radix tree. HEAD method body suppression per
+        RFC 7230 §3.3. POST/PUT Content-Type enforcement via strictBody. PATCH
+        enforcement via strictPatch. Method registry tracks registered methods per
+        path for 405 + Allow header.
+
+    - path: "lib/validate-config.js"
+      instructions: >
+        Registration-time validation of declarative route configs and router options.
+        Key sets (VALID_CONFIG_KEYS, VALID_ROUTER_OPTIONS_KEYS, etc.) must stay
+        synchronized with pipeline-builder.js and router.js. Value type errors always
+        throw regardless of strict setting.
+
+    - path: "types-override/**"
+      instructions: >
+        Hand-written TypeScript declaration overrides. RouteConfig<A> interface must
+        match pipeline-builder.js config keys. RouterOptions must match router.js
+        options. Verify generic propagation to route methods for contravariant
+        execute parameter typing.
+
   auto_review:
     enabled: true
+    auto_incremental_review: true
     drafts: false
-  tone_instructions: >
-    Focus on REST/RFC compliance, transport security, and correct integration
-    with @centralping/ergo shared primitives.
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+      - "[skip review]"
+
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+    simplify:
+      enabled: false
+
+  pre_merge_checks:
+    docstrings:
+      mode: "off"
+    title:
+      mode: "warning"
+      requirements: |
+        PR title must follow conventional commit format: `{type}: {description} (#{issue-number})`
+        where type is one of: feat, fix, refactor, docs, chore, test, spike.
+        Description should be lowercase, imperative mood, concise.
+    description:
+      mode: "off"
+    issue_assessment:
+      mode: "warning"
+    custom_checks:
+      - name: "Peer Dependency Compatibility"
+        mode: "warning"
+        instructions: |
+          Pass/fail criteria for changed files:
+          - FAIL if a new import from @centralping/ergo is added (e.g., a new shared
+            primitive or middleware) without verifying that the peerDependencies floor
+            version provides it. The file:../ergo dev dependency masks version
+            mismatches locally.
+          - FAIL if lib/peer-surface.spec.unit.js is not updated to include the new
+            import when the import surface changes.
+          - PASS if no new @centralping/ergo imports were added, or if peerDependencies
+            and peer-surface test are updated accordingly.
+
+      - name: "Transport Security"
+        mode: "warning"
+        instructions: |
+          Pass/fail criteria for changed files in lib/transport/:
+          - FAIL if transport short-circuit responses do not produce RFC 9457 Problem
+            Details bodies via error-response.js.
+          - FAIL if 5xx error detail is not redacted (internal messages must not leak
+            to clients).
+          - FAIL if request-ID validation is bypassed for custom generate() output
+            (must validate string type, max length, no CRLF/null).
+          - PASS if all transport concerns follow security conventions, or if no
+            transport files changed.
+
+      - name: "JSDoc Completeness"
+        mode: "warning"
+        instructions: |
+          Pass/fail criteria for changed JavaScript source files (excluding tests):
+          - FAIL if a new exported function lacks @param and @returns JSDoc annotations.
+          - FAIL if JSDoc uses uppercase primitives (String, Number, Boolean instead of
+            string, number, boolean), including inside compound types.
+          - FAIL if JSDoc uses @return instead of @returns.
+          - PASS if all JSDoc follows conventions, or if no source files changed.
+          Exclude test files from this check.
+
+      - name: "Zero Tech Debt"
+        mode: "warning"
+        instructions: |
+          Pass/fail criteria for all changed files:
+          - FAIL if new lines (added in this PR, not pre-existing) contain TODO, FIXME,
+            HACK, or XXX comments.
+          - PASS if no such patterns are found in newly added lines.
+          This is a pre-release project with a zero-tech-debt policy — all work is either
+          done now or tracked as a GitHub issue.
+
+  tools:
+    ast-grep:
+      essential_rules: true
+    github-checks:
+      enabled: true
+      timeout_ms: 300000
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    languagetool:
+      enabled: true
+      level: "default"
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+    zizmor:
+      enabled: true
+    biome:
+      enabled: false
+    eslint:
+      enabled: false
+    oxc:
+      enabled: false
+    ruff:
+      enabled: false
+    pylint:
+      enabled: false
+    flake8:
+      enabled: false
+    golangci-lint:
+      enabled: false
+    clippy:
+      enabled: false
+    phpstan:
+      enabled: false
+    phpmd:
+      enabled: false
+    phpcs:
+      enabled: false
+    swiftlint:
+      enabled: false
+    rubocop:
+      enabled: false
+    detekt:
+      enabled: false
+    buf:
+      enabled: false
+    regal:
+      enabled: false
+    pmd:
+      enabled: false
+    clang:
+      enabled: false
+    cppcheck:
+      enabled: false
+    fortitude:
+      enabled: false
+    fbinfer:
+      enabled: false
+    sqlfluff:
+      enabled: false
+    hadolint:
+      enabled: false
+    circleci:
+      enabled: false
+    prisma-lint:
+      enabled: false
+    luacheck:
+      enabled: false
+    brakeman:
+      enabled: false
+    dotenv-lint:
+      enabled: false
+    htmlhint:
+      enabled: false
+    stylelint:
+      enabled: false
+    checkmake:
+      enabled: false
+    osv-scanner:
+      enabled: false
+    blinter:
+      enabled: false
+    smarty-lint:
+      enabled: false
+    ember-template-lint:
+      enabled: false
+    psscriptanalyzer:
+      enabled: false
+
 chat:
   auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  pull_requests:
+    scope: auto
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+  linked_repositories:
+    - repository: "CentralPing/ergo"
+      instructions: >
+        Core middleware toolkit. ergo-router consumes shared primitives from ergo's
+        lib/ (cors, rate-limit, security-headers, attach-instance, vary,
+        sanitize-quoted-string) and composes ergo's pipeline middleware via
+        pipeline-builder.js. Changes to ergo's lib/ exports or middleware return
+        conventions may require ergo-router updates.
+    - repository: "CentralPing/centralping.github.io"
+      instructions: >
+        Project documentation website. API reference is generated from ergo-router's
+        JSDoc via starlight-typedoc. README content and route config documentation
+        should stay synchronized with the website guides.
