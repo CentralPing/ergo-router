@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+---
+
+## [0.3.0] - 2026-06-05
+
 ### Added
 
 - **`paginate` pipeline config key.** Declarative route configs accept a `paginate` key that
