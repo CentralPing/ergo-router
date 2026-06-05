@@ -8,6 +8,7 @@
  * @since 0.1.0
  * @requires ./lib/router.js
  * @requires ./lib/lifecycle.js
+ * @requires ./lib/presets.js
  *
  * @example
  * import http from 'node:http';
