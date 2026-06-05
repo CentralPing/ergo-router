@@ -10,6 +10,13 @@ All notable changes to this project will be documented in this file.
   `TRANSPORT_DEFAULTS.referrerPolicy` from `'strict-origin-when-cross-origin'` to `'no-referrer'`,
   matching `@centralping/ergo`'s `lib/security-headers.js` default, the pipeline middleware, and
   all website documentation. Added contract test for `Referrer-Policy` header. (#80)
+- **Generic propagation to route methods.** Router route methods (`get`, `post`, `put`,
+  `patch`, `delete`) now propagate the `RouteConfig<A>` generic type parameter, allowing
+  TypeScript consumers to pass typed route configs with full `domainAcc` inference in
+  `execute` callbacks. Previously, route methods accepted only `RouteConfig` (defaulting to
+  `Record<string, unknown>`), which caused type errors under `strictFunctionTypes` when
+  passing `RouteConfig<SpecificType>`. The default `A = Record<string, unknown>` preserves
+  backward compatibility. (#79)
 
 ---
 

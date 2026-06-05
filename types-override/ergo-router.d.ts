@@ -182,11 +182,11 @@ export interface Router {
   mount(prefix: string, subRouter: Router): Router;
   handle(): (req: IncomingMessage, res: ServerResponse) => void;
   listen(port: number, ...args: any[]): import('node:http').Server;
-  get(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig, routeOpts?: object): Router;
-  post(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig, routeOpts?: object): Router;
-  put(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig, routeOpts?: object): Router;
-  patch(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig, routeOpts?: object): Router;
-  delete(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig, routeOpts?: object): Router;
+  get<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
+  post<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
+  put<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
+  patch<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
+  delete<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
 }
 
 // ---------------------------------------------------------------------------
