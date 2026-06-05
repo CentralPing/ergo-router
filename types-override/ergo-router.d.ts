@@ -16,6 +16,7 @@ import type {
   CsrfOptions,
   IdempotencyOptions,
   LoggerOptions,
+  PaginateOptions,
   PreconditionOptions,
   RateLimitOptions,
   SecurityHeadersOptions,
@@ -109,6 +110,7 @@ export interface RouteConfigDefaults {
   preconditionRequired?: PreconditionOptions | boolean;
   cookie?: CookieOptions | boolean;
   url?: object | boolean;
+  paginate?: PaginateOptions | boolean;
   jsonApiQuery?: object | boolean;
   prefer?: object | boolean;
   securityHeaders?: SecurityHeadersOptions | boolean;
@@ -140,6 +142,7 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
   preconditionRequired?: PreconditionOptions | boolean;
   cookie?: CookieOptions | boolean;
   url?: object | boolean;
+  paginate?: PaginateOptions | boolean;
   jsonApiQuery?: object | boolean;
   prefer?: object | boolean;
   securityHeaders?: SecurityHeadersOptions | boolean;

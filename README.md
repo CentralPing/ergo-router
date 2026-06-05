@@ -220,6 +220,7 @@ router.delete(path, config);
 | `cacheControl`         | Cache-Control options or `false`                                                     | [RFC 9111](https://www.rfc-editor.org/rfc/rfc9111)                                                                  |
 | `jsonApiQuery`         | JSON:API query parsing options or `false`                                            | [JSON:API](https://jsonapi.org/)                                                                                    |
 | `preconditionRequired` | 428 enforcement for PUT/PATCH or `false`                                             | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3)                                                |
+| `paginate`             | Pagination options or `false`. Auto-includes URL parsing.                            | [RFC 8288](https://www.rfc-editor.org/rfc/rfc8288)                                                                  |
 | `prefer`               | Prefer header parsing options or `false`                                             | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240)                                                                  |
 | `rateLimit`            | Per-route rate limit options or `false`                                              | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4)                                                |
 | `use`                  | Custom middleware array `[fn, setPath]` tuples or bare functions, or `false`         | --                                                                                                                  |
@@ -231,8 +232,9 @@ Some middleware is automatically included based on the HTTP method, even when no
 
 | Middleware | Auto-included for | Behavior                                                                             |
 | ---------- | ----------------- | ------------------------------------------------------------------------------------ |
-| `url`      | GET, DELETE       | URL/query parsing is included by default for methods that do not have a request body |
-| `body`     | POST, PUT, PATCH  | Body parsing is included by default for methods that carry a request body            |
+| `url`      | GET, DELETE        | URL/query parsing is included by default for methods that do not have a request body |
+| `url`      | when `paginate` active | URL parsing is auto-included for any method when pagination is enabled           |
+| `body`     | POST, PUT, PATCH   | Body parsing is included by default for methods that carry a request body            |
 
 The `execute` function receives four arguments: `(req, res, domainAcc, responseAcc)`. Most handlers only need the domain accumulator (`acc` in the examples above) which carries route params, parsed body, auth identity, and other middleware outputs. The response accumulator is available as the 4th argument for advanced use cases — see the [Architecture](https://centralping.github.io/concepts/architecture/) page for the full two-accumulator model.
 
