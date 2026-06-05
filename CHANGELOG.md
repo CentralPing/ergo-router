@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Transport `Referrer-Policy` default aligned with shared primitive.** Changed
+  `TRANSPORT_DEFAULTS.referrerPolicy` from `'strict-origin-when-cross-origin'` to `'no-referrer'`,
+  matching `@centralping/ergo`'s `lib/security-headers.js` default, the pipeline middleware, and
+  all website documentation. Added contract test for `Referrer-Policy` header. (#80)
+
 ---
 
 ## [0.3.0] - 2026-06-05
