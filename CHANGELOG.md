@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`presets.jsonApi` convenience export.** A deeply frozen `RouterOptions` object that
+  enables transport-level request ID and security headers, and restricts content negotiation
+  to `application/json`. Consumers spread it into `createRouter()` for one-liner JSON API
+  configuration. Excludes deployment-specific concerns (auth, CORS origin, rate limiting).
+  Available via `import {presets} from '@centralping/ergo-router'`. (#70)
+
 - **Typed `RouteConfig` with generic accumulator.** Hand-written TypeScript declaration overrides
   (`types-override/`) provide precise type information for declarative route configuration.
   Each middleware key is typed with its specific ergo option interface (e.g., `AcceptsOptions`,

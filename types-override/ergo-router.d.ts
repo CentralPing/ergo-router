@@ -211,3 +211,12 @@ export interface GracefulResult {
   server: import('node:http').Server;
   shutdown: (signal: string) => Promise<void>;
 }
+
+// ---------------------------------------------------------------------------
+// Presets
+// ---------------------------------------------------------------------------
+
+/** Namespace object containing all available router presets. */
+export interface Presets {
+  readonly jsonApi: Readonly<RouterOptions>;
+}

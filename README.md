@@ -129,6 +129,53 @@ router.listen(3000, () => console.log('Listening on :3000'));
 
 </details>
 
+## Presets
+
+Presets provide pre-built router configurations for common use cases. Spread them into `createRouter()` to get started quickly:
+
+```js
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({
+  ...presets.jsonApi,
+  transport: {cors: {origin: 'https://myapp.com'}},
+  defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}},
+});
+```
+
+<details>
+<summary>TypeScript</summary>
+
+```ts
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({
+  ...presets.jsonApi,
+  transport: {cors: {origin: 'https://myapp.com'}},
+  defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}},
+});
+```
+
+</details>
+
+### `presets.jsonApi`
+
+Enables transport-level request ID and security headers, and restricts content negotiation to `application/json`.
+
+| Key | Value | Purpose |
+| --- | --- | --- |
+| `transport.requestId` | `{}` | Generate unique request IDs |
+| `transport.security` | `{}` | Set security response headers |
+| `defaults.accepts` | `{types: ['application/json']}` | Restrict to JSON content type |
+
+**Excludes** (deployment-specific): auth, CORS origin, rate limiting.
+
+**Override semantics:** Standard shallow spread. Overriding `transport` replaces the entire transport object. To extend `defaults` while preserving preset values, use nested spread:
+
+```js
+defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}}
+```
+
 ## API Overview
 
 ### `createRouter(options?)`
