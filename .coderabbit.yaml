@@ -3,9 +3,8 @@ early_access: true
 
 tone_instructions: >
   Focus on REST/RFC compliance, transport security (request-ID validation, 5xx
-  redaction, HSTS HTTPS detection), and correct integration with @centralping/ergo
-  shared primitives. Verify auto-wrap pattern, pipeline builder stage ordering,
-  and peer dependency compatibility.
+  redaction, HSTS), and correct @centralping/ergo shared primitive integration.
+  Verify auto-wrap pattern, pipeline stage ordering, and peer dep compatibility.
 
 reviews:
   profile: assertive
