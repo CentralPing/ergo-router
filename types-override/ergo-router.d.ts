@@ -122,7 +122,7 @@ export interface RouteConfigDefaults {
   validate?: ValidateOptions | boolean;
   timeout?: TimeoutOptions | boolean;
   compress?: CompressOptions | boolean;
-  use?: Array<((...args: any[]) => unknown) | [(...args: any[]) => unknown, string]> | false;
+  use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
 }
 
 /**
@@ -154,7 +154,7 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
   validate?: ValidateOptions | boolean;
   timeout?: TimeoutOptions | boolean;
   compress?: CompressOptions | boolean;
-  use?: Array<((...args: any[]) => unknown) | [(...args: any[]) => unknown, string]> | false;
+  use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
   execute: (req: IncomingMessage, res: ServerResponse, domainAcc: A, responseAcc: Record<string, unknown>) => unknown;
   send?: SendOptions;
   noSend?: boolean;

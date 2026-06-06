@@ -223,7 +223,7 @@ router.delete(path, config);
 | `paginate`             | Pagination options or `false`. Auto-includes URL parsing.                            | [RFC 8288](https://www.rfc-editor.org/rfc/rfc8288)                                                                  |
 | `prefer`               | Prefer header parsing options or `false`                                             | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240)                                                                  |
 | `rateLimit`            | Per-route rate limit options or `false`                                              | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4)                                                |
-| `use`                  | Custom middleware array `[fn, setPath]` tuples or bare functions, or `false`         | --                                                                                                                  |
+| `use`                  | Custom middleware array `{fn, setPath}` config objects or bare functions, or `false`  | --                                                                                                                  |
 | `openapi`              | OpenAPI annotation object (summary, description, tags, responses, etc.)              | [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0)                                                                 |
 
 #### Auto-included Middleware

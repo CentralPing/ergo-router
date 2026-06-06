@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
   middleware now uses `{fn, setPath}` config objects. Response-only middleware (rateLimit,
   precondition, securityHeaders, cacheControl, validate, jsonApiQuery) are plain functions.
   `RouteConfig.use` accepts `Array<function|{fn: function, setPath: string}>`.
-  Requires `@centralping/ergo >= 0.4.0`.
+  Requires `@centralping/ergo >= 0.4.0 < 0.5.0`.
 
 ### Fixed
 
