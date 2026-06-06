@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING: Pipeline builder uses config objects instead of tuples.** (#83)
+  Aligned with `@centralping/ergo@0.4.0` compose-with API change. Domain-producing
+  middleware now uses `{fn, setPath}` config objects. Response-only middleware (rateLimit,
+  precondition, securityHeaders, cacheControl, validate, jsonApiQuery) are plain functions.
+  `RouteConfig.use` accepts `Array<function|{fn: function, setPath: string}>`.
+  Requires `@centralping/ergo >= 0.4.0 < 0.5.0`.
+
 ### Fixed
 
 - **Transport `Referrer-Policy` default aligned with shared primitive.** Changed
