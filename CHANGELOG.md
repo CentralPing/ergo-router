@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-06
+
 ### Changed
 
 - **BREAKING: Pipeline builder uses config objects instead of tuples.** (#83)
