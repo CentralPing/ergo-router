@@ -11,12 +11,20 @@ export {graceful};
 
 export declare const presets: Presets;
 
+export declare const defineGet: typeof import('./ergo-router.js').defineGet;
+export declare const definePost: typeof import('./ergo-router.js').definePost;
+export declare const defineRoute: typeof import('./ergo-router.js').defineRoute;
+
 export type {
   RouterOptions,
   Router,
   Presets,
   RouteConfig,
   RouteConfigDefaults,
+  RouteConfigBase,
+  InferAccumulator,
+  AutoGetAccumulator,
+  AutoPostAccumulator,
   TransportOptions,
   TransportRequestIdOptions,
   TransportSecurityOptions,

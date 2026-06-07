@@ -38,3 +38,4 @@
 export {default} from './lib/router.js';
 export {default as graceful} from './lib/lifecycle.js';
 export {presets} from './lib/presets.js';
+export {defineGet, definePost, defineRoute} from './lib/define-route.js';
