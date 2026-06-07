@@ -194,7 +194,11 @@ router.post(path, config);
 router.put(path, config);
 router.patch(path, config);
 router.delete(path, config);
+
+router.use(...fns);
 ```
+
+`router.use(...fns)` registers application-level middleware that is prepended to every declarative/array pipeline before all four stages (Negotiation, Authorization, Validation, Execution). Returns the router for chaining. **Array pipelines only** — raw function handlers (`router.get('/path', fn)`) bypass `router.use()` middleware.
 
 ### Route Config
 
@@ -216,11 +220,15 @@ router.delete(path, config);
 | `cacheControl`         | Cache-Control options or `false`                                                     | [RFC 9111](https://www.rfc-editor.org/rfc/rfc9111)                                                                  |
 | `jsonApiQuery`         | JSON:API query parsing options or `false`                                            | [JSON:API](https://jsonapi.org/)                                                                                    |
 | `preconditionRequired` | 428 enforcement for PUT/PATCH or `false`                                             | [RFC 6585 &sect;3](https://www.rfc-editor.org/rfc/rfc6585#section-3)                                                |
+| `idempotency`          | Idempotency-Key header enforcement options or `false`                                | [RFC 8677 (draft)](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/)                      |
 | `paginate`             | Pagination options or `false`. Auto-includes URL parsing.                            | [RFC 8288](https://www.rfc-editor.org/rfc/rfc8288)                                                                  |
 | `prefer`               | Prefer header parsing options or `false`                                             | [RFC 7240](https://www.rfc-editor.org/rfc/rfc7240)                                                                  |
 | `rateLimit`            | Per-route rate limit options or `false`                                              | [RFC 6585 &sect;4](https://www.rfc-editor.org/rfc/rfc6585#section-4)                                                |
 | `use`                  | Custom middleware array `{fn, setPath}` config objects or bare functions, or `false`  | --                                                                                                                  |
 | `openapi`              | OpenAPI annotation object (summary, description, tags, responses, etc.)              | [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0)                                                                 |
+| `noSend`               | Skip automatic `send()` — handler manages the response directly (`boolean`, default `false`) | --                                                                                                    |
+| `send`                 | Per-route `send()` options (prettify, etag, vary, envelope, etc.)                    | --                                                                                                                  |
+| `catchHandler`         | Per-route error handler `(req, res, err)`. Receives normalized errors with `statusCode`/`status` | --                                                                                            |
 
 #### Auto-included Middleware
 
