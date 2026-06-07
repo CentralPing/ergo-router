@@ -92,8 +92,7 @@ router.listen(3000, () => console.log('Listening on :3000'));
 <summary>TypeScript</summary>
 
 ```ts
-import type {IncomingMessage, ServerResponse} from 'node:http';
-import createRouter from '@centralping/ergo-router';
+import createRouter, {defineGet, definePost} from '@centralping/ergo-router';
 
 const router = createRouter({
   transport: {
@@ -107,25 +106,22 @@ const router = createRouter({
   }
 });
 
-router.get('/users/:id', {
-  execute: (req: IncomingMessage, res: ServerResponse, acc: {route: {params: {id: string}}}) => ({
-    response: {body: {id: acc.route.params.id}}
-  })
-});
+router.get('/users/:id', defineGet(
+  {url: true},
+  (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})
+));
 
-router.post('/users', {
-  validate: {body: {type: 'object', properties: {name: {type: 'string'}}, required: ['name']}},
-  execute: (req: IncomingMessage, res: ServerResponse, acc: {body: {parsed: {name: string}}}) => ({
-    response: {statusCode: 201, body: acc.body.parsed}
-  })
-});
+router.post('/users', definePost(
+  {validate: {body: {type: 'object', properties: {name: {type: 'string'}}, required: ['name']}}},
+  (req, res, acc) => ({response: {statusCode: 201, body: acc.body.parsed}})
+));
 
 router.listen(3000, () => console.log('Listening on :3000'));
 ```
 
-> **Note:** The type annotations above represent the expected types for the accumulator
-> properties. As ergo's `.d.ts` type declarations improve, these types will be inferred
-> automatically — removing the need for explicit annotations.
+> **Note:** The `defineGet` and `definePost` helpers infer the accumulator type from
+> enabled middleware keys — `acc.route.params`, `acc.url`, `acc.body`, etc. are fully
+> typed without manual annotation. See [Typed Route Helpers](#typed-route-helpers) below.
 
 </details>
 
@@ -237,6 +233,83 @@ Some middleware is automatically included based on the HTTP method, even when no
 | `body`     | POST, PUT, PATCH   | Body parsing is included by default for methods that carry a request body            |
 
 The `execute` function receives four arguments: `(req, res, domainAcc, responseAcc)`. Most handlers only need the domain accumulator (`acc` in the examples above) which carries route params, parsed body, auth identity, and other middleware outputs. The response accumulator is available as the 4th argument for advanced use cases — see the [Architecture](https://centralping.github.io/concepts/architecture/) page for the full two-accumulator model.
+
+### Typed Route Helpers
+
+`defineGet`, `definePost`, and `defineRoute` enable TypeScript to infer the domain accumulator type from enabled middleware config keys — providing fully typed `acc` in execute callbacks without manual generic annotation.
+
+| Helper | Auto-includes | Use for |
+| --- | --- | --- |
+| `defineGet(config, execute)` | `{url: UrlResult}` | GET, DELETE routes |
+| `definePost(config, execute)` | `{body: BodyResult}` | POST, PUT, PATCH routes |
+| `defineRoute(config, execute)` | — | Method-agnostic (add `url`/`body` explicitly) |
+
+```js
+import createRouter, {defineGet, definePost} from '@centralping/ergo-router';
+
+const router = createRouter({
+  transport: {requestId: {}, security: {}},
+  defaults: {accepts: {types: ['application/json']}}
+});
+
+router.get('/users/:id', defineGet(
+  {authorization: true, url: true},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult — typed
+    acc.url.query;    // Record<string, string | string[]> — typed
+    acc.route.params; // Record<string, string> — always present
+    return {response: {body: {id: acc.route.params.id}}};
+  }
+));
+
+router.post('/users', definePost(
+  {authorization: true, body: {limit: 2048}},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult — typed
+    acc.body.parsed;  // unknown — typed
+    return {response: {statusCode: 201, body: acc.body.parsed}};
+  }
+));
+```
+
+<details>
+<summary>TypeScript</summary>
+
+```ts
+import createRouter, {defineGet, definePost} from '@centralping/ergo-router';
+
+const router = createRouter({
+  transport: {requestId: {}, security: {}},
+  defaults: {accepts: {types: ['application/json']}}
+});
+
+router.get('/users/:id', defineGet(
+  {authorization: true, url: true},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult
+    acc.url.query;    // Record<string, string | string[]>
+    acc.route.params; // Record<string, string>
+    return {response: {body: {id: acc.route.params.id}}};
+  }
+));
+
+router.post('/users', definePost(
+  {authorization: true, body: {limit: 2048}},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult
+    acc.body.parsed;  // unknown
+    return {response: {statusCode: 201, body: acc.body.parsed}};
+  }
+));
+```
+
+</details>
+
+Keys set to `false` correctly suppress their accumulator type. `paginate` transitively includes URL types.
+
+**Known limitation:** Middleware enabled via `createRouter({defaults: {...}})` is not visible to type inference. Add the key explicitly to the route config for typed access.
+
+**Advanced types:** `RouteConfigBase`, `InferAccumulator<C>`, `AutoGetAccumulator<C>`, and `AutoPostAccumulator<C>` are exported for custom inference helpers.
 
 ### `graceful(handler, options?)`
 

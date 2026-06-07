@@ -9,6 +9,7 @@
  * @requires ./lib/router.js
  * @requires ./lib/lifecycle.js
  * @requires ./lib/presets.js
+ * @requires ./lib/define-route.js
  *
  * @example
  * import http from 'node:http';
