@@ -9,18 +9,28 @@
 
 import type {
   AcceptsOptions,
+  AcceptsResult,
+  AuthorizationResult,
   BodyOptions,
+  BodyResult,
+  CookieJar,
   CookieOptions,
   CsrfOptions,
   AuthorizationOptions,
+  IdempotencyResult,
+  LogEntry,
+  PaginateResult,
+  PreferResult,
   TimeoutOptions,
   CompressOptions,
   TracingOptions,
+  TracingResult,
   RateLimitOptions,
   SecurityHeadersOptions,
   CacheControlOptions,
   LoggerOptions,
   IdempotencyOptions,
+  UrlResult,
   ValidateOptions,
   PreconditionOptions,
   SendOptions,
@@ -35,6 +45,8 @@ import type {
   GracefulResult,
   TransportOptions,
 } from '../ergo-router.js';
+
+import {defineGet, definePost, defineRoute} from '../ergo-router.js';
 
 import type createRouter from '../lib/router.js';
 import type buildPipeline from '../lib/pipeline-builder.js';
@@ -319,12 +331,13 @@ function testRouteMethodInferredGeneric(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testRouteMethodDefaultGeneric(router: Router) {
-  router.get('/health', {
+  const config: RouteConfig = {
     execute: (_req, _res, acc) => {
       const value: unknown = acc.anything;
       return {response: {body: value}};
     },
-  });
+  };
+  router.get('/health', config);
 }
 
 // ---------------------------------------------------------------------------
@@ -364,3 +377,386 @@ void testRouteMethodExplicitGeneric;
 void testRouteMethodInferredGeneric;
 void testRouteMethodDefaultGeneric;
 void testRouteMethodGenericRejectsInvalid;
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred route params are always present (via defineGet)
+// ---------------------------------------------------------------------------
+
+function testInferredRouteParams(router: Router) {
+  router.get('/users/:id', defineGet(
+    {},
+    (_req, _res, acc) => {
+      const params: Record<string, string> = acc.route.params;
+      return {response: {body: params}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred body type when body middleware is enabled
+// ---------------------------------------------------------------------------
+
+function testInferredBody(router: Router) {
+  router.post('/users', definePost(
+    {body: {limit: 1024}},
+    (_req, _res, acc) => {
+      const body: BodyResult = acc.body;
+      return {response: {body: body.parsed}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred authorization type
+// ---------------------------------------------------------------------------
+
+function testInferredAuth(router: Router) {
+  router.get('/protected', defineGet(
+    {authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]}},
+    (_req, _res, acc) => {
+      const auth: AuthorizationResult = acc.auth;
+      return {response: {body: auth}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred URL type when url middleware is enabled
+// ---------------------------------------------------------------------------
+
+function testInferredUrl(router: Router) {
+  router.get('/search', defineGet(
+    {url: true},
+    (_req, _res, acc) => {
+      const url: UrlResult = acc.url;
+      return {response: {body: url.query}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred accepts type
+// ---------------------------------------------------------------------------
+
+function testInferredAccepts(router: Router) {
+  router.get('/items', defineGet(
+    {accepts: {types: ['application/json']}},
+    (_req, _res, acc) => {
+      const accepts: AcceptsResult = acc.accepts;
+      return {response: {body: accepts.type}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred cookies type
+// ---------------------------------------------------------------------------
+
+function testInferredCookies(router: Router) {
+  router.get('/session', defineGet(
+    {cookie: true},
+    (_req, _res, acc) => {
+      const cookies: CookieJar = acc.cookies;
+      return {response: {body: cookies.size}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred paginate type (includes transitive url)
+// ---------------------------------------------------------------------------
+
+function testInferredPaginate(router: Router) {
+  router.get('/items', defineRoute(
+    {paginate: true},
+    (_req, _res, acc) => {
+      const paginate: PaginateResult = acc.paginate;
+      const url: UrlResult = acc.url;
+      return {response: {body: {paginate, query: url.query}}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred logger type
+// ---------------------------------------------------------------------------
+
+function testInferredLogger(router: Router) {
+  router.get('/log', defineGet(
+    {logger: true},
+    (_req, _res, acc) => {
+      const log: LogEntry = acc.log;
+      return {response: {body: log.requestId}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred tracing type
+// ---------------------------------------------------------------------------
+
+function testInferredTracing(router: Router) {
+  router.get('/traced', defineGet(
+    {tracing: {serviceName: 'my-app'}},
+    (_req, _res, acc) => {
+      const trace: TracingResult = acc.trace;
+      return {response: {body: trace.traceId}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred idempotency type
+// ---------------------------------------------------------------------------
+
+function testInferredIdempotency(router: Router) {
+  router.post('/actions', definePost(
+    {idempotency: {required: true}},
+    (_req, _res, acc) => {
+      const idempotency: IdempotencyResult = acc.idempotency;
+      return {response: {body: idempotency}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Inferred prefer type
+// ---------------------------------------------------------------------------
+
+function testInferredPrefer(router: Router) {
+  router.get('/items', defineGet(
+    {prefer: true},
+    (_req, _res, acc) => {
+      const prefer: PreferResult = acc.prefer;
+      return {response: {body: prefer}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Multiple middleware keys produce intersection
+// ---------------------------------------------------------------------------
+
+function testInferredMultipleMiddleware(router: Router) {
+  router.post('/users', definePost(
+    {authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]}, body: {limit: 2048}, logger: true},
+    (_req, _res, acc) => {
+      const auth: AuthorizationResult = acc.auth;
+      const body: BodyResult = acc.body;
+      const log: LogEntry = acc.log;
+      const params: Record<string, string> = acc.route.params;
+      return {response: {body: {auth, parsed: body.parsed, requestId: log.requestId, params}}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included body on POST via definePost
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedBodyPost(router: Router) {
+  router.post('/data', definePost(
+    {},
+    (_req, _res, acc) => {
+      const body: BodyResult = acc.body;
+      return {response: {body: body.parsed}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included url on GET via defineGet
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedUrlGet(router: Router) {
+  router.get('/search', defineGet(
+    {},
+    (_req, _res, acc) => {
+      const url: UrlResult = acc.url;
+      return {response: {body: url.query}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included url on DELETE via defineGet
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedUrlDelete(router: Router) {
+  router.delete('/items/:id', defineGet(
+    {},
+    (_req, _res, acc) => {
+      const url: UrlResult = acc.url;
+      return {response: {body: url.pathname}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included body on PUT via definePost
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedBodyPut(router: Router) {
+  router.put('/items/:id', definePost(
+    {},
+    (_req, _res, acc) => {
+      const body: BodyResult = acc.body;
+      return {response: {body: body.parsed}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included body on PATCH via definePost
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedBodyPatch(router: Router) {
+  router.patch('/items/:id', definePost(
+    {},
+    (_req, _res, acc) => {
+      const body: BodyResult = acc.body;
+      return {response: {body: body.parsed}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: Accessing absent key via defineGet
+// ---------------------------------------------------------------------------
+
+function testInferredRejectsAbsentKey(router: Router) {
+  router.get('/simple', defineGet(
+    {},
+    (_req, _res, acc) => {
+      // @ts-expect-error — auth not in accumulator without authorization config
+      const bad: unknown = acc.auth;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: body not available via defineGet without explicit config
+// ---------------------------------------------------------------------------
+
+function testInferredRejectsBodyOnGet(router: Router) {
+  router.get('/read-only', defineGet(
+    {},
+    (_req, _res, acc) => {
+      // @ts-expect-error — body not in accumulator for GET routes (defineGet provides url, not body)
+      const bad: unknown = acc.body;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: url not available via definePost without explicit config
+// ---------------------------------------------------------------------------
+
+function testInferredRejectsUrlOnPost(router: Router) {
+  router.post('/create', definePost(
+    {},
+    (_req, _res, acc) => {
+      // @ts-expect-error — url not in accumulator for POST routes (definePost provides body, not url)
+      const bad: unknown = acc.url;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: false value suppresses type inference
+// ---------------------------------------------------------------------------
+
+function testInferredFalseSuppressesType(router: Router) {
+  router.post('/no-body', definePost(
+    {body: false},
+    (_req, _res, acc) => {
+      // @ts-expect-error — body: false disables body parsing, even on POST
+      const bad: unknown = acc.body;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Backward compat: Explicit generic still works
+// ---------------------------------------------------------------------------
+
+interface CustomAcc {
+  userId: string;
+  role: 'admin' | 'user';
+}
+
+function testExplicitGenericStillWorks(router: Router) {
+  const config: RouteConfig<CustomAcc> = {
+    authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]},
+    execute: (_req, _res, acc) => {
+      const userId: string = acc.userId;
+      const role: 'admin' | 'user' = acc.role;
+      return {response: {body: {userId, role}}};
+    },
+  };
+  router.get('/custom', config);
+}
+
+// ---------------------------------------------------------------------------
+// Backward compat: Bare RouteConfig variable still works
+// ---------------------------------------------------------------------------
+
+function testBareRouteConfigStillWorks(router: Router) {
+  const config: RouteConfig = {
+    execute: (_req, _res, acc) => {
+      const value: unknown = acc.anything;
+      return {response: {body: value}};
+    },
+  };
+  router.get('/bare', config);
+}
+
+// ---------------------------------------------------------------------------
+// Backward compat: Function handler still works
+// ---------------------------------------------------------------------------
+
+function testFunctionHandlerStillWorks(router: Router) {
+  router.get('/health', () => undefined);
+}
+
+// ---------------------------------------------------------------------------
+// Backward compat: Array pipeline still works
+// ---------------------------------------------------------------------------
+
+function testArrayPipelineStillWorks(router: Router) {
+  router.get('/pipeline', [() => ({value: 'ok'}), () => ({response: {body: 'done'}})]);
+}
+
+// ---------------------------------------------------------------------------
+// Suppress unused-variable warnings (inference tests)
+// ---------------------------------------------------------------------------
+
+void testInferredRouteParams;
+void testInferredBody;
+void testInferredAuth;
+void testInferredUrl;
+void testInferredAccepts;
+void testInferredCookies;
+void testInferredPaginate;
+void testInferredLogger;
+void testInferredTracing;
+void testInferredIdempotency;
+void testInferredPrefer;
+void testInferredMultipleMiddleware;
+void testAutoIncludedBodyPost;
+void testAutoIncludedUrlGet;
+void testAutoIncludedUrlDelete;
+void testAutoIncludedBodyPut;
+void testAutoIncludedBodyPatch;
+void testInferredRejectsAbsentKey;
+void testInferredRejectsBodyOnGet;
+void testInferredRejectsUrlOnPost;
+void testInferredFalseSuppressesType;
+void testExplicitGenericStillWorks;
+void testBareRouteConfigStillWorks;
+void testFunctionHandlerStillWorks;
+void testArrayPipelineStillWorks;

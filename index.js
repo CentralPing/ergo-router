@@ -9,6 +9,7 @@
  * @requires ./lib/router.js
  * @requires ./lib/lifecycle.js
  * @requires ./lib/presets.js
+ * @requires ./lib/define-route.js
  *
  * @example
  * import http from 'node:http';
@@ -38,3 +39,4 @@
 export {default} from './lib/router.js';
 export {default as graceful} from './lib/lifecycle.js';
 export {presets} from './lib/presets.js';
+export {defineGet, definePost, defineRoute} from './lib/define-route.js';

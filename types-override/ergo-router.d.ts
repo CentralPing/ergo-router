@@ -8,21 +8,31 @@
 
 import type {
   AcceptsOptions,
+  AcceptsResult,
   AuthorizationOptions,
+  AuthorizationResult,
   BodyOptions,
+  BodyResult,
   CacheControlOptions,
   CompressOptions,
+  CookieJar,
   CookieOptions,
   CsrfOptions,
   IdempotencyOptions,
+  IdempotencyResult,
+  LogEntry,
   LoggerOptions,
   PaginateOptions,
+  PaginateResult,
   PreconditionOptions,
+  PreferResult,
   RateLimitOptions,
   SecurityHeadersOptions,
   SendOptions,
   TimeoutOptions,
   TracingOptions,
+  TracingResult,
+  UrlResult,
   ValidateOptions,
 } from '@centralping/ergo/types';
 
@@ -163,6 +173,68 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
 }
 
 // ---------------------------------------------------------------------------
+// Accumulator type inference
+// ---------------------------------------------------------------------------
+
+/**
+ * RouteConfig shape without `execute` — used as the inference source for
+ * config-key-based accumulator computation. Separating `execute` from the
+ * inference constraint prevents circular type dependencies.
+ */
+export interface RouteConfigBase {
+  tracing?: TracingOptions | boolean;
+  logger?: LoggerOptions | boolean;
+  rateLimit?: RateLimitOptions | boolean;
+  accepts?: AcceptsOptions | boolean;
+  preconditionRequired?: PreconditionOptions | boolean;
+  cookie?: CookieOptions | boolean;
+  url?: object | boolean;
+  paginate?: PaginateOptions | boolean;
+  jsonApiQuery?: object | boolean;
+  prefer?: object | boolean;
+  securityHeaders?: SecurityHeadersOptions | boolean;
+  cacheControl?: CacheControlOptions | boolean;
+  csrf?: CsrfOptions | boolean;
+  authorization?: AuthorizationOptions | boolean;
+  body?: BodyOptions | boolean;
+  idempotency?: IdempotencyOptions | boolean;
+  validate?: ValidateOptions | boolean;
+  timeout?: TimeoutOptions | boolean;
+  compress?: CompressOptions | boolean;
+  use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
+  send?: SendOptions;
+  noSend?: boolean;
+  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error) => unknown;
+  openapi?: Record<string, unknown>;
+}
+
+/**
+ * Computes the domain accumulator type from enabled middleware config keys.
+ * Each conditional branch maps a config key to its runtime accumulator shape.
+ * Keys set to `false` are excluded (they disable the middleware at runtime).
+ */
+export type InferAccumulator<C> =
+  {route: {params: Record<string, string>}}
+  & (C extends {tracing: false} ? {} : C extends {tracing: infer _} ? {trace: TracingResult} : {})
+  & (C extends {logger: false} ? {} : C extends {logger: infer _} ? {log: LogEntry} : {})
+  & (C extends {accepts: false} ? {} : C extends {accepts: infer _} ? {accepts: AcceptsResult} : {})
+  & (C extends {cookie: false} ? {} : C extends {cookie: infer _} ? {cookies: CookieJar} : {})
+  & (C extends {url: false} ? {} : C extends {url: infer _} ? {url: UrlResult} : {})
+  & (C extends {paginate: false} ? {} : C extends {paginate: infer _}
+      ? {paginate: PaginateResult} & (C extends {url: false} ? {} : {url: UrlResult})
+      : {})
+  & (C extends {prefer: false} ? {} : C extends {prefer: infer _} ? {prefer: PreferResult} : {})
+  & (C extends {authorization: false} ? {} : C extends {authorization: infer _} ? {auth: AuthorizationResult} : {})
+  & (C extends {body: false} ? {} : C extends {body: infer _} ? {body: BodyResult} : {})
+  & (C extends {idempotency: false} ? {} : C extends {idempotency: infer _} ? {idempotency: IdempotencyResult} : {});
+
+/** Auto-included accumulator keys for GET/DELETE routes (url parsed unless explicitly disabled). */
+export type AutoGetAccumulator<C> = C extends {url: false} ? {} : {url: UrlResult};
+
+/** Auto-included accumulator keys for POST/PUT/PATCH routes (body parsed unless explicitly disabled). */
+export type AutoPostAccumulator<C> = C extends {body: false} ? {} : {body: BodyResult};
+
+// ---------------------------------------------------------------------------
 // Router instance
 // ---------------------------------------------------------------------------
 
@@ -223,3 +295,72 @@ export interface GracefulResult {
 export interface Presets {
   readonly jsonApi: Readonly<RouterOptions>;
 }
+
+// ---------------------------------------------------------------------------
+// Route config inference helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Type-inference helper for GET/DELETE routes. Infers the domain accumulator
+ * type from enabled middleware config keys. Provides auto-included `url` typing
+ * for GET/DELETE methods.
+ *
+ * TypeScript cannot infer generic parameters from an object literal's properties
+ * when a sibling callback in the same object uses that generic (circular
+ * inference). This helper separates the config (inference source) from the
+ * execute callback (contextual typing target) into two parameters.
+ *
+ * @example
+ * router.get('/users/:id', defineGet(
+ *   {authorization: true, url: true},
+ *   (req, res, acc) => {
+ *     acc.auth;           // AuthorizationResult
+ *     acc.url.query;      // Record<string, string | string[]>
+ *     acc.route.params;   // Record<string, string>
+ *   }
+ * ));
+ */
+export declare function defineGet<C extends RouteConfigBase>(
+  config: C,
+  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoGetAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
+): RouteConfig<InferAccumulator<C> & AutoGetAccumulator<C>>;
+
+/**
+ * Type-inference helper for POST/PUT/PATCH routes. Infers the domain accumulator
+ * type from enabled middleware config keys. Provides auto-included `body` typing
+ * for POST/PUT/PATCH methods.
+ *
+ * @example
+ * router.post('/users', definePost(
+ *   {authorization: true, body: {limit: 2048}},
+ *   (req, res, acc) => {
+ *     acc.auth;           // AuthorizationResult
+ *     acc.body.parsed;    // unknown
+ *     acc.route.params;   // Record<string, string>
+ *   }
+ * ));
+ */
+export declare function definePost<C extends RouteConfigBase>(
+  config: C,
+  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoPostAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
+): RouteConfig<InferAccumulator<C> & AutoPostAccumulator<C>>;
+
+/**
+ * General type-inference helper (method-agnostic). Infers the domain accumulator
+ * type from enabled middleware config keys. Does not include method-specific
+ * auto-includes — add `url: true` or `body: true` explicitly if needed.
+ *
+ * @example
+ * router.get('/items', defineRoute(
+ *   {accepts: true, paginate: true},
+ *   (req, res, acc) => {
+ *     acc.accepts;        // AcceptsResult
+ *     acc.paginate;       // PaginateResult
+ *     acc.url;            // UrlResult (from paginate's transitive include)
+ *   }
+ * ));
+ */
+export declare function defineRoute<C extends RouteConfigBase>(
+  config: C,
+  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
+): RouteConfig<InferAccumulator<C>>;

@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Accumulator type inference via `defineGet`/`definePost`/`defineRoute` helpers.** (#91)
+  New exported functions that infer the domain accumulator type from enabled middleware config
+  keys, providing fully typed `acc` in execute callbacks without manual generic annotation.
+  `defineGet` auto-includes `{url: UrlResult}` for GET/DELETE; `definePost` auto-includes
+  `{body: BodyResult}` for POST/PUT/PATCH; `defineRoute` is method-agnostic. Keys set to `false`
+  correctly suppress their accumulator type. `paginate` transitively includes URL types.
+
+  ```js
+  import {defineGet} from '@centralping/ergo-router';
+
+  router.get('/users/:id', defineGet(
+    {authorization: true, url: true},
+    (req, res, acc) => {
+      acc.auth;         // AuthorizationResult
+      acc.url.query;    // Record<string, string | string[]>
+      acc.route.params; // Record<string, string>
+    }
+  ));
+  ```
+
+  **Known limitation:** Middleware enabled via `createRouter({defaults: {...}})` is not visible
+  to type inference. Add the key explicitly to the route config for typed access.
+
+- **New type exports:** `RouteConfigBase`, `InferAccumulator<C>`, `AutoGetAccumulator<C>`,
+  `AutoPostAccumulator<C>` — available for advanced use cases and custom inference helpers.
+
 ## [0.4.0] - 2026-06-06
 
 ### Changed
