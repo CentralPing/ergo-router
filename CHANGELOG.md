@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Documentation
+
+- **Route Config table now includes all valid config keys.** Added `noSend`, `send`, and
+  `catchHandler` (Route Option Keys) and `idempotency` (Pipeline Key) to the README Route
+  Config table. Previously only Pipeline Keys and Annotation Keys were listed. (#98)
+- **`router.use()` documented in Route Methods section.** Added signature, behavior
+  description (prepended to every declarative/array pipeline), and the array-pipelines-only
+  caveat. (#98)
+
 ## [0.4.1] - 2026-06-07
 
 ### Added
