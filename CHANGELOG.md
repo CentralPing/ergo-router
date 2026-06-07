@@ -32,6 +32,18 @@ All notable changes to this project will be documented in this file.
 - **New type exports:** `RouteConfigBase`, `InferAccumulator<C>`, `AutoGetAccumulator<C>`,
   `AutoPostAccumulator<C>` — available for advanced use cases and custom inference helpers.
 
+- **`timing` option on `createRouter()` for `X-Response-Time` header.** (#93)
+  Pass `timing: true` for defaults or `timing: {header?, precision?}` for custom
+  configuration. Measures pipeline execution time via a `res.writeHead` interception using
+  the shared `applyResponseTiming` primitive from `@centralping/ergo/lib/response-time`.
+  Zero overhead when disabled (default). Short-circuit responses (404, 405, 415, 429) are
+  intentionally excluded — timing measures pipeline execution, not transport/routing overhead.
+
+### Changed
+
+- Bumped `@centralping/ergo` peer dependency range to `>=0.5.0 <0.6.0` (was `>=0.4.0 <0.5.0`).
+  Floor bumped to 0.5.0 for `applyResponseTiming` import from `lib/response-time`. (#93)
+
 ## [0.4.0] - 2026-06-06
 
 ### Changed

@@ -104,6 +104,7 @@ export interface RouterOptions {
   catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error) => unknown;
   strict?: boolean;
   debug?: boolean;
+  timing?: boolean | {header?: string; precision?: number};
   defaults?: RouteConfigDefaults;
 }
 
