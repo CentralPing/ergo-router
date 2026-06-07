@@ -200,7 +200,7 @@ router.delete(path, config);
 
 | Key                    | Description                                                                          | Standard                                                                                                            |
 | ---------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `execute`              | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required) | --                                                                                                                  |
+| `execute`              | Route handler `(req, res, domainAcc, responseAcc) => {response?, value?}` (required). Most handlers use 3 args: `(req, res, acc)` — see below. | --                                                                                                                  |
 | `tracing`              | OpenTelemetry tracing options or `false`                                             | [W3C Trace Context](https://www.w3.org/TR/trace-context/)                                                           |
 | `validate`             | JSON Schema for body/query validation                                                | --                                                                                                                  |
 | `accepts`              | Content negotiation options or `false`                                               | [RFC 9110 &sect;12.5](https://www.rfc-editor.org/rfc/rfc9110#section-12.5)                                          |
