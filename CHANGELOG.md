@@ -41,8 +41,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Bumped `@centralping/ergo` peer dependency range to `>=0.5.0 <0.6.0` (was `>=0.4.0 <0.5.0`).
-  Floor bumped to 0.5.0 for `applyResponseTiming` import from `lib/response-time`. (#93)
+- Bumped `@centralping/ergo` peer dependency floor to `>=0.4.1 <0.5.0` (was `>=0.4.0 <0.5.0`).
+  Floor bumped to 0.4.1 for `applyResponseTiming` import from `lib/response-time`. (#93)
 
 ## [0.4.0] - 2026-06-06
 
