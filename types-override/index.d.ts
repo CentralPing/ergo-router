@@ -1,4 +1,4 @@
-import type {RouterOptions, Router, Presets, GracefulOptions, GracefulResult} from './ergo-router.js';
+import type {RouterOptions, Router, Presets, GracefulLog, GracefulOptions, GracefulResult} from './ergo-router.js';
 
 export {default} from './lib/router.js';
 
@@ -30,6 +30,7 @@ export type {
   TransportSecurityOptions,
   TransportRateLimitOptions,
   TransportCorsOptions,
+  GracefulLog,
   GracefulOptions,
   GracefulResult,
 } from './ergo-router.js';

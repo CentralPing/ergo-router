@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **New type export: `GracefulLog`.** (#102) Interface for the logger shape accepted by
+  `graceful()` and guaranteed in lifecycle callbacks. Consumers can use `GracefulLog` to type
+  a custom logger without extracting it from `GracefulOptions`.
+
+### Fixed
+
+- **openapi sub-path export now has TypeScript declarations.** (#101) The `./openapi` sub-path
+  export was missing its `.d.ts` file because `openapi.js` was not included in the
+  `tsconfig.json` compilation input. TypeScript consumers importing
+  `@centralping/ergo-router/openapi` now get proper type information instead of `any`.
+- **`graceful()` callbacks receive non-optional `log` parameter.** (#102) The `onStartup` and
+  `onShutdown` callback context now correctly types `log` as always-defined (`GracefulLog`),
+  matching the runtime behavior where `log` defaults to `console`. Previously, `log` was typed
+  as `GracefulLog | undefined`, forcing consumers to use optional chaining or non-null
+  assertions.
+
 ### Documentation
 
 - **Route Config table now includes all valid config keys.** Added `noSend`, `send`, and

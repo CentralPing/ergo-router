@@ -41,6 +41,7 @@ import type {
   RouterOptions,
   Router,
   Presets,
+  GracefulLog,
   GracefulOptions,
   GracefulResult,
   TransportOptions,
@@ -178,8 +179,8 @@ function testGracefulTypes() {
     hostname: '0.0.0.0',
     timeout: 5000,
     signals: ['SIGINT', 'SIGTERM'],
-    onStartup: async ({log}) => { log?.info('starting'); },
-    onShutdown: async ({log, signal}) => { log?.info(`shutdown: ${signal}`); },
+    onStartup: async ({log}) => { log.info('starting'); },
+    onShutdown: async ({log, signal}) => { log.info(`shutdown: ${signal}`); },
   };
   void opts;
 }
@@ -732,6 +733,33 @@ function testArrayPipelineStillWorks(router: Router) {
 }
 
 // ---------------------------------------------------------------------------
+// Positive: GracefulLog is non-optional in callback context (#102)
+// ---------------------------------------------------------------------------
+
+function testGracefulLogType() {
+  const opts: GracefulOptions = {
+    onStartup: async ({log}) => {
+      const logger: GracefulLog = log;
+      logger.info('ready');
+      logger.warn('caution');
+      logger.error('fail');
+    },
+  };
+  void opts;
+}
+
+// ---------------------------------------------------------------------------
+// Positive: openapi sub-path export resolves to typed function (#101)
+// ---------------------------------------------------------------------------
+
+import type generateOpenAPI from '../lib/openapi.js';
+
+function testOpenAPIImport(fn: typeof generateOpenAPI) {
+  const spec = fn({} as Router, {title: 'Test', version: '1.0.0'});
+  void spec;
+}
+
+// ---------------------------------------------------------------------------
 // Suppress unused-variable warnings (inference tests)
 // ---------------------------------------------------------------------------
 
@@ -760,3 +788,5 @@ void testExplicitGenericStillWorks;
 void testBareRouteConfigStillWorks;
 void testFunctionHandlerStillWorks;
 void testArrayPipelineStillWorks;
+void testGracefulLogType;
+void testOpenAPIImport;
