@@ -266,20 +266,23 @@ export interface Router {
 // Graceful lifecycle
 // ---------------------------------------------------------------------------
 
+/** Logger shape accepted by `graceful()` and guaranteed in lifecycle callbacks. */
+export interface GracefulLog {
+  info: (...args: any[]) => void;
+  warn: (...args: any[]) => void;
+  error: (...args: any[]) => void;
+}
+
 /** Options for the `graceful()` lifecycle utility. */
 export interface GracefulOptions {
   port?: number;
   hostname?: string;
-  log?: {
-    info: (...args: any[]) => void;
-    warn: (...args: any[]) => void;
-    error: (...args: any[]) => void;
-  };
+  log?: GracefulLog;
   signals?: string[];
   timeout?: number;
   exit?: (code?: number) => void;
-  onStartup?: (ctx: {log: GracefulOptions['log']}) => void | Promise<void>;
-  onShutdown?: (ctx: {log: GracefulOptions['log']; signal: string}) => void | Promise<void>;
+  onStartup?: (ctx: {log: GracefulLog}) => void | Promise<void>;
+  onShutdown?: (ctx: {log: GracefulLog; signal: string}) => void | Promise<void>;
 }
 
 /** Return value of `graceful()`. */
