@@ -14,6 +14,12 @@ All notable changes to this project will be documented in this file.
   All presets are deeply frozen `RouterOptions` objects following the same spread-override
   semantics as `presets.jsonApi`. SSE routes should set `noSend: true` per-route (route option,
   not valid in defaults).
+- **`onResponse` post-send lifecycle hook at router and route levels.** (#140)
+  Observation callback fired after `send()` completes. Configurable at router level
+  (`createRouter({onResponse})`) for all routes, and/or per-route (`{onResponse}` in route
+  config). Both levels fire independently — route-level first, then router-level. Hook
+  errors are swallowed. Receives `(req, res, responseInfo, domainAcc)`. Does not fire when
+  `catchHandler` takes over (error path).
 - **`catchHandler` now receives domain accumulator as 4th argument.** (#105) Custom error
   handlers (`catchHandler`) are now called with `(req, res, err, domainAcc)` instead of
   `(req, res, err)`. The domain accumulator contains route params, parsed body, auth identity,
