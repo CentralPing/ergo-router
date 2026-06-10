@@ -228,7 +228,7 @@ router.use(...fns);
 | `openapi`              | OpenAPI annotation object (summary, description, tags, responses, etc.)              | [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0)                                                                 |
 | `noSend`               | Skip automatic `send()` — handler manages the response directly (`boolean`, default `false`) | --                                                                                                                  |
 | `send`                 | Per-route `send()` options (prettify, etag, vary, envelope, etc.)                    | --                                                                                                                  |
-| `catchHandler`         | Per-route error handler `(req, res, err)`. Receives normalized errors with `statusCode`/`status` | --                                                                                                                  |
+| `catchHandler`         | Per-route error handler `(req, res, err, domainAcc)`. Receives normalized errors with `statusCode`/`status` and the domain accumulator (may be partially populated) | --                                                                                                                  |
 
 #### Auto-included Middleware
 

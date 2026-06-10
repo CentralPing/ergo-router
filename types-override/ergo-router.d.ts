@@ -101,7 +101,7 @@ export interface RouterOptions {
   strictPatch?: boolean;
   strictBody?: boolean;
   send?: SendOptions;
-  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error) => unknown;
+  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
   strict?: boolean;
   debug?: boolean;
   timing?: boolean | {header?: string; precision?: number};
@@ -169,7 +169,7 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
   execute: (req: IncomingMessage, res: ServerResponse, domainAcc: A, responseAcc: Record<string, unknown>) => unknown;
   send?: SendOptions;
   noSend?: boolean;
-  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error) => unknown;
+  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
   openapi?: Record<string, unknown>;
 }
 
@@ -205,7 +205,7 @@ export interface RouteConfigBase {
   use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
   send?: SendOptions;
   noSend?: boolean;
-  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error) => unknown;
+  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
   openapi?: Record<string, unknown>;
 }
 

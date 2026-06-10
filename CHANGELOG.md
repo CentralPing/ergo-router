@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`catchHandler` now receives domain accumulator as 4th argument.** (#105) Custom error
+  handlers (`catchHandler`) are now called with `(req, res, err, domainAcc)` instead of
+  `(req, res, err)`. The domain accumulator contains route params, parsed body, auth identity,
+  and other pipeline data available at the time the error was thrown. The accumulator may be
+  partially populated if the error occurred mid-pipeline. Backwards compatible — existing
+  3-argument handlers continue to work unchanged.
 - **Semantic config validation at registration time.** (#104) Routes with `body: false` and
   `validate: {body: schema}` now throw at registration time instead of producing a guaranteed
   500 error on every request. The check uses resolved values (route config > defaults) so
