@@ -252,9 +252,27 @@ function testPresetsType() {
       transport: {requestId: {}, security: {}},
       defaults: {accepts: {types: ['application/json']}},
     },
+    sse: {
+      transport: {requestId: {}, security: {}},
+      defaults: {compress: false, timeout: false, accepts: {types: ['text/event-stream']}},
+    },
+    webhooks: {
+      transport: {requestId: {}, security: {}},
+      defaults: {accepts: {types: ['application/json']}, idempotency: {required: true}},
+    },
+    public: {
+      transport: {requestId: {}, security: {}, rateLimit: {}},
+      defaults: {accepts: {types: ['application/json']}, cacheControl: {public: true, maxAge: 300}},
+    },
   };
-  const opts: Readonly<RouterOptions> = p.jsonApi;
-  void opts;
+  const jsonApiOpts: Readonly<RouterOptions> = p.jsonApi;
+  const sseOpts: Readonly<RouterOptions> = p.sse;
+  const webhooksOpts: Readonly<RouterOptions> = p.webhooks;
+  const publicOpts: Readonly<RouterOptions> = p.public;
+  void jsonApiOpts;
+  void sseOpts;
+  void webhooksOpts;
+  void publicOpts;
 }
 
 // ---------------------------------------------------------------------------

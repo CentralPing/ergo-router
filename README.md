@@ -172,6 +172,144 @@ Enables transport-level request ID and security headers, and restricts content n
 defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}}
 ```
 
+### `presets.sse`
+
+Configures the router for Server-Sent Events. Enables transport-level request ID and security headers, disables compression (prevents buffering of streamed chunks), disables timeout (SSE connections are long-lived), and restricts content negotiation to `text/event-stream`.
+
+| Key | Value | Purpose |
+| --- | --- | --- |
+| `transport.requestId` | `{}` | Generate unique request IDs |
+| `transport.security` | `{}` | Set security response headers |
+| `defaults.compress` | `false` | Prevent SSE chunk buffering |
+| `defaults.timeout` | `false` | Allow long-lived connections |
+| `defaults.accepts` | `{types: ['text/event-stream']}` | Restrict to event stream content type |
+
+**Excludes** (deployment-specific): auth, CORS origin, rate limiting.
+
+**Per-route:** SSE routes should set `noSend: true` so the handler can write the event stream directly. `noSend` is a route option and cannot be set in `defaults`.
+
+```js
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({...presets.sse});
+
+router.get('/events', {
+  noSend: true,
+  execute: (_req, res) => {
+    res.writeHead(200, {'content-type': 'text/event-stream'});
+    res.write('data: hello\n\n');
+    // keep connection open for streaming...
+  }
+});
+```
+
+<details>
+<summary>TypeScript</summary>
+
+```ts
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({...presets.sse});
+
+router.get('/events', {
+  noSend: true,
+  execute: (_req, res) => {
+    res.writeHead(200, {'content-type': 'text/event-stream'});
+    res.write('data: hello\n\n');
+  }
+});
+```
+
+</details>
+
+### `presets.webhooks`
+
+Configures the router for webhook receivers. Enables transport-level request ID and security headers, restricts content negotiation to `application/json`, and requires the `Idempotency-Key` header for safe at-least-once delivery.
+
+| Key | Value | Purpose |
+| --- | --- | --- |
+| `transport.requestId` | `{}` | Generate unique request IDs |
+| `transport.security` | `{}` | Set security response headers |
+| `defaults.accepts` | `{types: ['application/json']}` | Restrict to JSON content type |
+| `defaults.idempotency` | `{required: true}` | Require Idempotency-Key header |
+
+**Excludes** (deployment-specific): auth, CORS origin, rate limiting.
+
+```js
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({...presets.webhooks});
+
+router.post('/hooks', {
+  execute: (req, res, acc) => ({
+    response: {body: {received: true, key: acc.idempotency.key}}
+  })
+});
+```
+
+<details>
+<summary>TypeScript</summary>
+
+```ts
+import createRouter, {presets, definePost} from '@centralping/ergo-router';
+
+const router = createRouter({...presets.webhooks});
+
+router.post('/hooks', definePost(
+  {idempotency: {required: true}},
+  (_req, _res, acc) => ({
+    response: {body: {received: true, key: acc.idempotency.key}}
+  })
+));
+```
+
+</details>
+
+### `presets.public`
+
+Configures the router for public read-only APIs. Enables transport-level request ID, security headers, and rate limiting (built-in defaults: 100 req/60s), restricts content negotiation to `application/json`, and sets `Cache-Control: public, max-age=300`.
+
+| Key | Value | Purpose |
+| --- | --- | --- |
+| `transport.requestId` | `{}` | Generate unique request IDs |
+| `transport.security` | `{}` | Set security response headers |
+| `transport.rateLimit` | `{}` | Rate limiting (100 req/60s defaults) |
+| `defaults.accepts` | `{types: ['application/json']}` | Restrict to JSON content type |
+| `defaults.cacheControl` | `{public: true, maxAge: 300}` | 5-minute public cache |
+
+**Excludes** (deployment-specific): auth, CORS origin.
+
+```js
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({
+  ...presets.public,
+  transport: {...presets.public.transport, rateLimit: {max: 30}}
+});
+
+router.get('/data', {
+  execute: () => ({response: {body: {items: []}}})
+});
+```
+
+<details>
+<summary>TypeScript</summary>
+
+```ts
+import createRouter, {presets} from '@centralping/ergo-router';
+
+const router = createRouter({
+  ...presets.public,
+  transport: {...presets.public.transport, rateLimit: {max: 30}}
+});
+
+router.get('/data', {
+  execute: () => ({response: {body: {items: []}}})
+});
+```
+
+</details>
+
 ## API Overview
 
 ### `createRouter(options?)`

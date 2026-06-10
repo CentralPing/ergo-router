@@ -298,6 +298,9 @@ export interface GracefulResult {
 /** Namespace object containing all available router presets. */
 export interface Presets {
   readonly jsonApi: Readonly<RouterOptions>;
+  readonly sse: Readonly<RouterOptions>;
+  readonly webhooks: Readonly<RouterOptions>;
+  readonly public: Readonly<RouterOptions>;
 }
 
 // ---------------------------------------------------------------------------
