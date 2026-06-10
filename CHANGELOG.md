@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Semantic config validation at registration time.** (#104) Routes with `body: false` and
+  `validate: {body: schema}` now throw at registration time instead of producing a guaranteed
+  500 error on every request. The check uses resolved values (route config > defaults) so
+  contradictions originating from `defaults` are also caught. Always throws regardless of
+  `strict` setting (same rationale as value type errors).
 - **New type export: `GracefulLog`.** (#102) Interface for the logger shape accepted by
   `graceful()` and guaranteed in lifecycle callbacks. Consumers can use `GracefulLog` to type
   a custom logger without extracting it from `GracefulOptions`.
