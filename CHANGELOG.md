@@ -9,10 +9,11 @@ All notable changes to this project will be documented in this file.
 - **Three new presets: `presets.sse`, `presets.webhooks`, `presets.public`.** (#106) The
   `presets` namespace now includes configurations for Server-Sent Events (disables compression
   and timeout, restricts to `text/event-stream`), webhook receivers (requires `Idempotency-Key`
-  header, restricts to `application/json`), and public read-only APIs (enables rate limiting,
-  sets `Cache-Control: public, max-age=300`). All presets are deeply frozen `RouterOptions`
-  objects following the same spread-override semantics as `presets.jsonApi`. SSE routes should
-  set `noSend: true` per-route (route option, not valid in defaults).
+  header, restricts to `application/json`), and public read-only APIs (restricts to
+  `application/json`, enables rate limiting, sets `Cache-Control: public, max-age=300`).
+  All presets are deeply frozen `RouterOptions` objects following the same spread-override
+  semantics as `presets.jsonApi`. SSE routes should set `noSend: true` per-route (route option,
+  not valid in defaults).
 - **`catchHandler` now receives domain accumulator as 4th argument.** (#105) Custom error
   handlers (`catchHandler`) are now called with `(req, res, err, domainAcc)` instead of
   `(req, res, err)`. The domain accumulator contains route params, parsed body, auth identity,
