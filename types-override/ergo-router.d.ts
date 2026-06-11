@@ -92,6 +92,23 @@ export interface TransportOptions {
 }
 
 // ---------------------------------------------------------------------------
+// Response info (shared primitive from @centralping/ergo/lib/response-info)
+// ---------------------------------------------------------------------------
+
+/** Snapshot of response information for post-send observation hooks. */
+export interface ResponseInfo {
+  statusCode: number;
+  headers: Record<string, string | string[] | number | undefined>;
+  method: string;
+  url: string;
+  bodySize: number | undefined;
+  duration: number;
+}
+
+/** Callback signature for `onResponse` lifecycle hooks. */
+export type OnResponseHook = (req: IncomingMessage, res: ServerResponse, responseInfo: ResponseInfo, domainAcc: Record<string, unknown>) => unknown;
+
+// ---------------------------------------------------------------------------
 // Router options
 // ---------------------------------------------------------------------------
 
@@ -102,6 +119,7 @@ export interface RouterOptions {
   strictBody?: boolean;
   send?: SendOptions;
   catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
+  onResponse?: OnResponseHook;
   strict?: boolean;
   debug?: boolean;
   timing?: boolean | {header?: string; precision?: number};
@@ -170,6 +188,7 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
   send?: SendOptions;
   noSend?: boolean;
   catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
+  onResponse?: OnResponseHook;
   openapi?: Record<string, unknown>;
 }
 
@@ -206,6 +225,7 @@ export interface RouteConfigBase {
   send?: SendOptions;
   noSend?: boolean;
   catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
+  onResponse?: OnResponseHook;
   openapi?: Record<string, unknown>;
 }
 
