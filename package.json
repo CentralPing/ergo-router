@@ -86,7 +86,7 @@
     "find-my-way": "^9.0.0"
   },
   "peerDependencies": {
-    "@centralping/ergo": ">=0.4.1 <0.5.0",
+    "@centralping/ergo": ">=0.5.0 <0.6.0",
     "@types/node": ">= 22"
   },
   "peerDependenciesMeta": {
