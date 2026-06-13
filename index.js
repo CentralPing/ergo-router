@@ -12,7 +12,6 @@
  * @requires ./lib/define-route.js
  *
  * @example
- * import http from 'node:http';
  * import createRouter from '@centralping/ergo-router';
  *
  * const router = createRouter({
@@ -32,8 +31,7 @@
  *   res.end('ok');
  * });
  *
- * const server = http.createServer(router.handle());
- * server.listen(3000);
+ * router.listen(3000);
  */
 
 export {default} from './lib/router.js';
