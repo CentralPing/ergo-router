@@ -61,6 +61,10 @@ All notable changes to this project will be documented in this file.
 - **`router.use()` documented in Route Methods section.** Added signature, behavior
   description (prepended to every declarative/array pipeline), and the array-pipelines-only
   caveat. (#98)
+- **`@example` in `index.js` now uses `router.listen()` instead of raw `node:http`.** (#115)
+  The package entry point example previously demonstrated `http.createServer(router.handle())`
+  which is inconsistent with the README Quick Start and website guides. Updated to use the
+  built-in `router.listen()` convenience method.
 
 ## [0.4.1] - 2026-06-07
 
@@ -76,14 +80,14 @@ All notable changes to this project will be documented in this file.
   ```js
   import {defineGet} from '@centralping/ergo-router';
 
-  router.get('/users/:id', defineGet(
-    {authorization: true, url: true},
-    (req, res, acc) => {
-      acc.auth;         // AuthorizationResult
-      acc.url.query;    // Record<string, string | string[]>
+  router.get(
+    '/users/:id',
+    defineGet({authorization: true, url: true}, (req, res, acc) => {
+      acc.auth; // AuthorizationResult
+      acc.url.query; // Record<string, string | string[]>
       acc.route.params; // Record<string, string>
-    }
-  ));
+    })
+  );
   ```
 
   **Known limitation:** Middleware enabled via `createRouter({defaults: {...}})` is not visible
