@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-13
+
 ### Added
 
 - **Three new presets: `presets.sse`, `presets.webhooks`, `presets.public`.** (#106) The
@@ -34,6 +36,11 @@ All notable changes to this project will be documented in this file.
 - **New type export: `GracefulLog`.** (#102) Interface for the logger shape accepted by
   `graceful()` and guaranteed in lifecycle callbacks. Consumers can use `GracefulLog` to type
   a custom logger without extracting it from `GracefulOptions`.
+
+### Changed
+
+- Bumped `@centralping/ergo` peer dependency ceiling to `>=0.5.0 <0.7.0` (was `>=0.5.0 <0.6.0`).
+  Ceiling expanded to include `@centralping/ergo@0.6.0`.
 
 ### Fixed
 
