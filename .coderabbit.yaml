@@ -144,8 +144,8 @@ reviews:
         mode: "warning"
         instructions: |
           Pass/fail criteria for all changed files:
-          - FAIL if new lines (added in this PR, not pre-existing) contain debt-marker
-            comments: `TODO`, `FIXME`, `HACK`, or `XXX`.
+          - FAIL if new lines (added in this PR, not pre-existing) contain common
+            debt-marker or unfinished-work comments.
           - PASS if no such markers are found in newly added lines.
           This is a pre-release project with a zero-tech-debt policy — all work is either
           done now or tracked as a GitHub issue.
