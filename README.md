@@ -322,7 +322,9 @@ Creates a new router instance with optional transport and default middleware con
 | `transport.security`  | Security headers (HSTS, CSP, etc.)               |
 | `transport.cors`      | CORS configuration                               |
 | `transport.rateLimit` | Rate limiting (sliding window)                   |
-| `defaults.*`          | Default middleware options applied to all routes |
+| `defaults.*`          | Default middleware options applied to all routes  |
+| `timing`              | `boolean \| {header?, precision?}` — inject `X-Response-Time` header measuring pipeline execution time (default `false`) |
+| `onResponse`          | `function` — post-send observation hook `(req, res, responseInfo, domainAcc)` fired after every route response |
 
 ### Route Methods
 
@@ -367,6 +369,7 @@ router.use(...fns);
 | `noSend`               | Skip automatic `send()` — handler manages the response directly (`boolean`, default `false`) | --                                                                                                                  |
 | `send`                 | Per-route `send()` options (prettify, etag, vary, envelope, etc.)                    | --                                                                                                                  |
 | `catchHandler`         | Per-route error handler `(req, res, err, domainAcc)`. Receives normalized errors with `statusCode`/`status` and the domain accumulator (may be partially populated) | --                                                                                                                  |
+| `onResponse`           | Per-route post-send observation hook `(req, res, responseInfo, domainAcc)`. Fires before the router-level hook. Does not fire when `catchHandler` takes over | --                                                                                                                  |
 
 #### Auto-included Middleware
 
@@ -471,6 +474,8 @@ const {server, shutdown} = await graceful(router.handle(), {
   onShutdown: async ({log, signal}) => { /* cleanup */ }
 });
 ```
+
+**Note:** The promise returned by `graceful()` resolves _after_ the server is already listening. Do not attach a `'listening'` event listener to `server` after `await graceful(...)` — it will never fire because the event has already been emitted. The function logs `Server listening on {hostname}:{port}` upon successful bind.
 
 #### OpenTelemetry SDK Lifecycle
 
