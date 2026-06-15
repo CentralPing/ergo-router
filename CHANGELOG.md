@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Route-level `send` now merges with router-level `send` instead of replacing it.** (#120)
+  Previously, `auto-wrap.js` used nullish coalescing (`routeOpts.send ?? routerOptions.send`)
+  which treated any defined route-level `send` object as a complete replacement for
+  router-level send options. When `addRoute()` auto-injected `{paginate: true}` or
+  `{prefer: true}` into route-level send, router-level options like `errorFormatter` were
+  silently dropped. Send resolution now uses spread-merge
+  (`{...routerOptions.send, ...routeOpts.send}`) — router-level is the base, route-level
+  overrides on conflict. This aligns with the route-config-over-defaults precedence model.
+  Routes that need to suppress a router-level send option can set it to `undefined` explicitly
+  (e.g., `send: {errorFormatter: undefined}`).
+
 ## [0.5.0] - 2026-06-13
 
 ### Added
