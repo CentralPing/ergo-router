@@ -551,6 +551,44 @@ The generator automatically extracts:
 
 Config keys are resolved against `router.defaults` using the same precedence as the pipeline builder (route > defaults > omitted).
 
+### Route Table
+
+`router.routeTable()` returns a formatted string summarizing all registered routes, enabled middleware, and transport configuration. Designed for startup logging:
+
+```js
+import createRouter, {graceful} from '@centralping/ergo-router';
+
+const router = createRouter({
+  transport: {requestId: {}, security: {}, cors: {origin: 'https://myapp.com'}},
+  defaults: {accepts: {types: ['application/json']}, timeout: {ms: 30000}}
+});
+
+router.get('/users/:id', {authorization: true, execute: (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})});
+router.post('/users', {validate: {body: {type: 'object'}}, execute: (req, res, acc) => ({response: {body: acc.body.parsed}})});
+
+const {server} = await graceful(router.handle(), {
+  onStartup: ({log}) => {
+    log.info(router.routeTable());
+  }
+});
+```
+
+Output:
+
+```
+Routes:
+  GET  /users/:id  [accepts, url, authorization, timeout]
+  POST /users      [accepts, body, validate, timeout]
+
+Transport:
+  requestId: enabled
+  security: enabled
+  rateLimit: disabled
+  cors: enabled (origin: https://myapp.com)
+```
+
+Non-declarative routes (raw function or array handlers) are shown as `(custom)`. Methods are right-padded for visual alignment.
+
 ## Standards Compliance
 
 | RFC / Standard                                                      | Description                    | ergo-router Feature                       |

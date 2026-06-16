@@ -4,7 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **`router.routeTable()` introspection method.** (#122) Returns a formatted multi-line string
+  summarizing registered routes, enabled middleware (in pipeline stage order), and transport
+  configuration. Designed for startup logging via `onStartup: ({log}) => log.info(router.routeTable())`.
+  Non-declarative routes (raw functions or arrays) are marked `(custom)`. Methods are
+  right-padded for visual alignment.
+
 ### Changed
+
+- **`resolve()` extracted to shared `lib/resolve-config.js` utility.** The config resolution
+  function (route config > defaults > omitted) was duplicated in `pipeline-builder.js` and
+  `openapi.js`. Now shared by all three consumers: pipeline-builder, openapi, and route-table.
+  Internal refactor — no behavior change.
 
 - **Route-level `send` now merges with router-level `send` instead of replacing it.** (#120)
   Previously, `auto-wrap.js` used nullish coalescing (`routeOpts.send ?? routerOptions.send`)
