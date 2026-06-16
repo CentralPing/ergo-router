@@ -30,6 +30,19 @@ All notable changes to this project will be documented in this file.
   Routes that need to suppress a router-level send option can set it to `undefined` explicitly
   (e.g., `send: {errorFormatter: undefined}`).
 
+### Fixed
+
+- **Typed `generateOpenAPI` signature and `OpenAPIDocument` return type.** (#124) The
+  `generateOpenAPI` function's `router` parameter and return type were both `object` in the
+  generated `.d.ts`, forcing consumers to cast. The `router` parameter is now typed as `Router`
+  and the return type is `OpenAPIDocument`, a new interface modeling the OpenAPI 3.1 document
+  structure at the depth `generateOpenAPI` produces. Supporting interfaces (`OpenAPIInfo`,
+  `OpenAPIOperation`, `OpenAPIPathItem`, `OpenAPIParameter`, `OpenAPIRequestBody`,
+  `OpenAPISecurityScheme`, `OpenAPIComponents`, `GenerateOpenAPIOptions`) are exported from
+  the main entry point and the `./openapi` sub-path. All interfaces use template-literal
+  index signatures (`[key: \`x-${string}\`]: unknown`) restricting extension members to the
+  `x-*` prefix required by OpenAPI 3.1 §4.1.
+
 ## [0.5.0] - 2026-06-13
 
 ### Added

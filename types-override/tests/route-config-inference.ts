@@ -45,6 +45,13 @@ import type {
   GracefulOptions,
   GracefulResult,
   TransportOptions,
+  OpenAPIDocument,
+  OpenAPIInfo,
+  OpenAPIPathItem,
+  OpenAPIOperation,
+  OpenAPIComponents,
+  OpenAPISecurityScheme,
+  GenerateOpenAPIOptions,
 } from '../ergo-router.js';
 
 import {defineGet, definePost, defineRoute} from '../ergo-router.js';
@@ -772,9 +779,44 @@ function testGracefulLogType() {
 
 import type generateOpenAPI from '../lib/openapi.js';
 
-function testOpenAPIImport(fn: typeof generateOpenAPI) {
-  const spec = fn({} as Router, {title: 'Test', version: '1.0.0'});
-  void spec;
+function testOpenAPIImport(fn: typeof generateOpenAPI, router: Router) {
+  const spec: OpenAPIDocument = fn(router, {title: 'Test', version: '1.0.0'});
+  // @ts-expect-error — router must be Router-typed, plain object is rejected
+  fn({}, {title: 'Test', version: '1.0.0'});
+  const openapi: string = spec.openapi;
+  const info: OpenAPIInfo = spec.info;
+  const title: string = info.title;
+  const version: string = info.version;
+  const paths: Record<string, OpenAPIPathItem> = spec.paths;
+  const components: OpenAPIComponents | undefined = spec.components;
+  const schemes: Record<string, OpenAPISecurityScheme> | undefined = components?.securitySchemes;
+  void openapi;
+  void title;
+  void version;
+  void paths;
+  void schemes;
+}
+
+function testOpenAPIOptions() {
+  const opts: GenerateOpenAPIOptions = {
+    title: 'My API',
+    version: '2.0.0',
+    description: 'A test API',
+    servers: [{url: 'https://api.example.com'}],
+    info: {contact: {name: 'Support', email: 'support@example.com'}},
+  };
+  void opts;
+}
+
+function testOpenAPIPathItemAccess() {
+  const item: OpenAPIPathItem = {
+    get: {summary: 'List items', responses: {200: {description: 'OK'}}},
+    post: {summary: 'Create item', requestBody: {required: true, content: {'application/json': {schema: {type: 'object'}}}}},
+  };
+  const getOp: OpenAPIOperation | undefined = item.get;
+  const summary: string | undefined = getOp?.summary;
+  void summary;
+  void item;
 }
 
 // ---------------------------------------------------------------------------
@@ -808,3 +850,5 @@ void testFunctionHandlerStillWorks;
 void testArrayPipelineStillWorks;
 void testGracefulLogType;
 void testOpenAPIImport;
+void testOpenAPIOptions;
+void testOpenAPIPathItemAccess;

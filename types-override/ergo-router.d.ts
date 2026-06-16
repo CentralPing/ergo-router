@@ -325,6 +325,141 @@ export interface Presets {
 }
 
 // ---------------------------------------------------------------------------
+// OpenAPI types
+// ---------------------------------------------------------------------------
+
+/** Contact information for the API (OpenAPI 3.1 Info Object > Contact Object). */
+export interface OpenAPIContact {
+  name?: string;
+  url?: string;
+  email?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** License information for the API (OpenAPI 3.1 Info Object > License Object). */
+export interface OpenAPILicense {
+  name: string;
+  identifier?: string;
+  url?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** API metadata (OpenAPI 3.1 Info Object). */
+export interface OpenAPIInfo {
+  title: string;
+  version: string;
+  description?: string;
+  termsOfService?: string;
+  contact?: OpenAPIContact;
+  license?: OpenAPILicense;
+  summary?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Server variable for URL template substitution (OpenAPI 3.1 Server Variable Object). */
+export interface OpenAPIServerVariable {
+  default: string;
+  enum?: string[];
+  description?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Server endpoint (OpenAPI 3.1 Server Object). */
+export interface OpenAPIServer {
+  url: string;
+  description?: string;
+  variables?: Record<string, OpenAPIServerVariable>;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Describes a single operation parameter (OpenAPI 3.1 Parameter Object). */
+export interface OpenAPIParameter {
+  name: string;
+  in: 'query' | 'header' | 'path' | 'cookie';
+  required?: boolean;
+  schema?: Record<string, unknown>;
+  description?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Media type entry within a request body or response (OpenAPI 3.1 Media Type Object). */
+export interface OpenAPIMediaType {
+  schema?: Record<string, unknown>;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Describes a request body (OpenAPI 3.1 Request Body Object). */
+export interface OpenAPIRequestBody {
+  required?: boolean;
+  content: Record<string, OpenAPIMediaType>;
+  description?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Describes a single API operation on a path (OpenAPI 3.1 Operation Object). */
+export interface OpenAPIOperation {
+  summary?: string;
+  description?: string;
+  operationId?: string;
+  tags?: string[];
+  deprecated?: boolean;
+  parameters?: OpenAPIParameter[];
+  requestBody?: OpenAPIRequestBody;
+  responses?: Record<string, unknown>;
+  security?: Array<Record<string, string[]>>;
+  externalDocs?: {description?: string; url: string; [key: `x-${string}`]: unknown};
+  [key: `x-${string}`]: unknown;
+}
+
+/** Path item containing operations keyed by HTTP method (OpenAPI 3.1 Path Item Object). */
+export interface OpenAPIPathItem {
+  get?: OpenAPIOperation;
+  put?: OpenAPIOperation;
+  post?: OpenAPIOperation;
+  delete?: OpenAPIOperation;
+  options?: OpenAPIOperation;
+  head?: OpenAPIOperation;
+  patch?: OpenAPIOperation;
+  trace?: OpenAPIOperation;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Defines a security scheme (OpenAPI 3.1 Security Scheme Object). */
+export interface OpenAPISecurityScheme {
+  type: 'apiKey' | 'http' | 'mutualTLS' | 'oauth2' | 'openIdConnect';
+  scheme?: string;
+  name?: string;
+  in?: 'query' | 'header' | 'cookie';
+  description?: string;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Holds reusable components (OpenAPI 3.1 Components Object). */
+export interface OpenAPIComponents {
+  securitySchemes?: Record<string, OpenAPISecurityScheme>;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Top-level OpenAPI 3.1 document. */
+export interface OpenAPIDocument {
+  openapi: string;
+  info: OpenAPIInfo;
+  paths: Record<string, OpenAPIPathItem>;
+  servers?: OpenAPIServer[];
+  components?: OpenAPIComponents;
+  [key: `x-${string}`]: unknown;
+}
+
+/** Options accepted by `generateOpenAPI()`. */
+export interface GenerateOpenAPIOptions {
+  title?: string;
+  version?: string;
+  description?: string;
+  servers?: OpenAPIServer[];
+  info?: Partial<OpenAPIInfo>;
+}
+
+// ---------------------------------------------------------------------------
 // Route config inference helpers
 // ---------------------------------------------------------------------------
 
