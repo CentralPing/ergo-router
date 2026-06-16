@@ -374,7 +374,7 @@ export interface OpenAPIServer {
 /** Describes a single operation parameter (OpenAPI 3.1 Parameter Object). */
 export interface OpenAPIParameter {
   name: string;
-  in: string;
+  in: 'query' | 'header' | 'path' | 'cookie';
   required?: boolean;
   schema?: Record<string, unknown>;
   description?: string;
@@ -425,10 +425,10 @@ export interface OpenAPIPathItem {
 
 /** Defines a security scheme (OpenAPI 3.1 Security Scheme Object). */
 export interface OpenAPISecurityScheme {
-  type: string;
+  type: 'apiKey' | 'http' | 'mutualTLS' | 'oauth2' | 'openIdConnect';
   scheme?: string;
   name?: string;
-  in?: string;
+  in?: 'query' | 'header' | 'cookie';
   description?: string;
   [key: `x-${string}`]: unknown;
 }

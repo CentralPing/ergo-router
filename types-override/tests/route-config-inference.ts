@@ -779,8 +779,10 @@ function testGracefulLogType() {
 
 import type generateOpenAPI from '../lib/openapi.js';
 
-function testOpenAPIImport(fn: typeof generateOpenAPI) {
-  const spec: OpenAPIDocument = fn({} as Router, {title: 'Test', version: '1.0.0'});
+function testOpenAPIImport(fn: typeof generateOpenAPI, router: Router) {
+  const spec: OpenAPIDocument = fn(router, {title: 'Test', version: '1.0.0'});
+  // @ts-expect-error — router must be Router-typed, plain object is rejected
+  fn({}, {title: 'Test', version: '1.0.0'});
   const openapi: string = spec.openapi;
   const info: OpenAPIInfo = spec.info;
   const title: string = info.title;
