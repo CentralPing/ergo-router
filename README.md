@@ -575,7 +575,7 @@ const {server} = await graceful(router.handle(), {
 
 Output:
 
-```
+```text
 Routes:
   GET  /users/:id  [accepts, url, authorization, timeout]
   POST /users      [accepts, body, validate, timeout]
