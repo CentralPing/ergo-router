@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-17
+
 ### Added
 
 - **`router.routeTable()` introspection method.** (#122) Returns a formatted multi-line string
