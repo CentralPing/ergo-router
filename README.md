@@ -62,18 +62,11 @@ Requires **Node.js >= 22**. `@centralping/ergo` is a peer dependency.
 ## Quick Start
 
 ```js
-import createRouter from '@centralping/ergo-router';
+import createRouter, {presets} from '@centralping/ergo-router';
 
 const router = createRouter({
-  transport: {
-    requestId: {},
-    security: {},
-    cors: {origin: 'https://myapp.com'}
-  },
-  defaults: {
-    accepts: {types: ['application/json']},
-    timeout: {ms: 30000}
-  }
+  ...presets.jsonApi,
+  transport: {cors: {origin: 'https://myapp.com'}},
 });
 
 router.get('/users/:id', {
@@ -92,18 +85,11 @@ router.listen(3000, () => console.log('Listening on :3000'));
 <summary>TypeScript</summary>
 
 ```ts
-import createRouter, {defineGet, definePost} from '@centralping/ergo-router';
+import createRouter, {presets, defineGet, definePost} from '@centralping/ergo-router';
 
 const router = createRouter({
-  transport: {
-    requestId: {},
-    security: {},
-    cors: {origin: 'https://myapp.com'}
-  },
-  defaults: {
-    accepts: {types: ['application/json']},
-    timeout: {ms: 30000}
-  }
+  ...presets.jsonApi,
+  transport: {cors: {origin: 'https://myapp.com'}},
 });
 
 router.get('/users/:id', defineGet(
@@ -135,7 +121,6 @@ import createRouter, {presets} from '@centralping/ergo-router';
 const router = createRouter({
   ...presets.jsonApi,
   transport: {cors: {origin: 'https://myapp.com'}},
-  defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}},
 });
 ```
 
@@ -148,7 +133,6 @@ import createRouter, {presets} from '@centralping/ergo-router';
 const router = createRouter({
   ...presets.jsonApi,
   transport: {cors: {origin: 'https://myapp.com'}},
-  defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}},
 });
 ```
 
@@ -156,20 +140,21 @@ const router = createRouter({
 
 ### `presets.jsonApi`
 
-Enables transport-level request ID and security headers, and restricts content negotiation to `application/json`.
+Enables transport-level request ID and security headers, restricts content negotiation to `application/json`, and applies a default request timeout (ergo's built-in 30 s).
 
 | Key | Value | Purpose |
 | --- | --- | --- |
 | `transport.requestId` | `{}` | Generate unique request IDs |
 | `transport.security` | `{}` | Set security response headers |
 | `defaults.accepts` | `{types: ['application/json']}` | Restrict to JSON content type |
+| `defaults.timeout` | `{}` | 30 s request timeout (ergo default) |
 
 **Excludes** (deployment-specific): auth, CORS origin, rate limiting.
 
 **Override semantics:** Standard shallow spread. Overriding `transport` replaces the entire transport object. To extend `defaults` while preserving preset values, use nested spread:
 
 ```js
-defaults: {...presets.jsonApi.defaults, timeout: {ms: 30000}}
+defaults: {...presets.jsonApi.defaults, authorization: true}
 ```
 
 ### `presets.sse`
@@ -224,7 +209,7 @@ router.get('/events', {
 
 ### `presets.webhooks`
 
-Configures the router for webhook receivers. Enables transport-level request ID and security headers, restricts content negotiation to `application/json`, and requires the `Idempotency-Key` header for safe at-least-once delivery.
+Configures the router for webhook receivers. Enables transport-level request ID and security headers, restricts content negotiation to `application/json`, requires the `Idempotency-Key` header for safe at-least-once delivery, and applies a default request timeout (ergo's built-in 30 s).
 
 | Key | Value | Purpose |
 | --- | --- | --- |
@@ -232,6 +217,7 @@ Configures the router for webhook receivers. Enables transport-level request ID 
 | `transport.security` | `{}` | Set security response headers |
 | `defaults.accepts` | `{types: ['application/json']}` | Restrict to JSON content type |
 | `defaults.idempotency` | `{required: true}` | Require Idempotency-Key header |
+| `defaults.timeout` | `{}` | 30 s request timeout (ergo default) |
 
 **Excludes** (deployment-specific): auth, CORS origin, rate limiting.
 
@@ -267,7 +253,7 @@ router.post('/hooks', definePost(
 
 ### `presets.public`
 
-Configures the router for public read-only APIs. Enables transport-level request ID, security headers, and rate limiting (built-in defaults: 100 req/60s), restricts content negotiation to `application/json`, and sets `Cache-Control: public, max-age=300`.
+Configures the router for public read-only APIs. Enables transport-level request ID, security headers, and rate limiting (built-in defaults: 100 req/60s), restricts content negotiation to `application/json`, sets `Cache-Control: public, max-age=300`, and applies a default request timeout (ergo's built-in 30 s).
 
 | Key | Value | Purpose |
 | --- | --- | --- |
@@ -276,6 +262,7 @@ Configures the router for public read-only APIs. Enables transport-level request
 | `transport.rateLimit` | `{}` | Rate limiting (100 req/60s defaults) |
 | `defaults.accepts` | `{types: ['application/json']}` | Restrict to JSON content type |
 | `defaults.cacheControl` | `{public: true, maxAge: 300}` | 5-minute public cache |
+| `defaults.timeout` | `{}` | 30 s request timeout (ergo default) |
 
 **Excludes** (deployment-specific): auth, CORS origin.
 
@@ -309,6 +296,16 @@ router.get('/data', {
 ```
 
 </details>
+
+### Production Checklist
+
+Presets provide a strong starting point but intentionally exclude concerns that vary by deployment. Before going to production, configure these per your requirements:
+
+- **Authorization** — `defaults: {...preset.defaults, authorization: {strategies: [...]}}`
+- **CORS origin** — `transport: {cors: {origin: 'https://your-domain.com'}}`
+- **Rate limiting** (except `presets.public` which includes it) — `transport: {...preset.transport, rateLimit: {max: 100}}`
+
+Per-route `timeout` can be adjusted via `timeout: {ms: N}` or disabled with `timeout: false`.
 
 ## API Overview
 
@@ -556,11 +553,11 @@ Config keys are resolved against `router.defaults` using the same precedence as 
 `router.routeTable()` returns a formatted string summarizing all registered routes, enabled middleware, and transport configuration. Designed for startup logging:
 
 ```js
-import createRouter, {graceful} from '@centralping/ergo-router';
+import createRouter, {presets, graceful} from '@centralping/ergo-router';
 
 const router = createRouter({
-  transport: {requestId: {}, security: {}, cors: {origin: 'https://myapp.com'}},
-  defaults: {accepts: {types: ['application/json']}, timeout: {ms: 30000}}
+  ...presets.jsonApi,
+  transport: {cors: {origin: 'https://myapp.com'}}
 });
 
 router.get('/users/:id', {authorization: true, execute: (req, res, acc) => ({response: {body: {id: acc.route.params.id}}})});

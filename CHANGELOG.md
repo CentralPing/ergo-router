@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Presets now include a default request timeout.** (#131, #137) `presets.jsonApi`,
+  `presets.webhooks`, and `presets.public` include `timeout: Object.freeze({})` in their
+  `defaults`, applying ergo's built-in 30-second request timeout. Previously, routes using
+  these presets had no timeout unless one was manually added. Handlers that take longer than
+  30 seconds will now receive a 408 Request Timeout response. To adjust: use
+  `defaults: {...preset.defaults, timeout: {ms: N}}` for a custom duration, or
+  `timeout: false` to disable per-route. `presets.sse` is unchanged (timeout is already
+  explicitly disabled for long-lived connections).
+
 ### Fixed
 
 - **`timing` option table rendering on npm.** (#134) The pipe character in the union type
