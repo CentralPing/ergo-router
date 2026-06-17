@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`timing` option table rendering on npm.** (#134) The pipe character in the union type
+  description (`boolean \| {header?, precision?}`) was interpreted as a table cell separator
+  by npm's markdown renderer, splitting the description across columns. Replaced with prose
+  "or" to match how other table rows express types.
+
 ## [0.6.0] - 2026-06-17
 
 ### Added
