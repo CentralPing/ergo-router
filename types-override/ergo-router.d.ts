@@ -280,6 +280,7 @@ export interface Router {
   put<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
   patch<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
   delete<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
+  routeTable(): string;
 }
 
 // ---------------------------------------------------------------------------
