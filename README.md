@@ -323,7 +323,7 @@ Creates a new router instance with optional transport and default middleware con
 | `transport.cors`      | CORS configuration                               |
 | `transport.rateLimit` | Rate limiting (sliding window)                   |
 | `defaults.*`          | Default middleware options applied to all routes  |
-| `timing`              | `boolean \| {header?, precision?}` — inject `X-Response-Time` header measuring pipeline execution time (default `false`) |
+| `timing`              | `boolean` or `{header?, precision?}` object — inject `X-Response-Time` header measuring pipeline execution time (default `false`) |
 | `onResponse`          | `function` — post-send observation hook `(req, res, responseInfo, domainAcc)` fired after every route response |
 
 ### Route Methods
