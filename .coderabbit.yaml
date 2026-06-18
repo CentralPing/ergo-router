@@ -16,12 +16,13 @@ reviews:
   sequence_diagrams: true
   review_details: true
   poem: false
+  in_progress_fortune: false
   review_status: true
   related_issues: true
   related_prs: true
   assess_linked_issues: true
   estimate_code_review_effort: true
-  prompt_for_ai_agents: true
+  enable_prompt_for_ai_agents: true
   abort_on_close: true
 
   path_filters:
@@ -74,7 +75,7 @@ reviews:
 
   auto_review:
     enabled: true
-    auto_incremental_review: true
+    auto_incremental_review: false
     drafts: false
     ignore_title_keywords:
       - "WIP"
@@ -141,11 +142,12 @@ reviews:
           Exclude test files from this check.
 
       - name: "Zero Tech Debt"
-        mode: "warning"
+        mode: "error"
         instructions: |
-          Pass/fail criteria for all changed files:
-          - FAIL if new lines (added in this PR, not pre-existing) contain common
-            debt-marker or unfinished-work comments.
+          Pass/fail criteria for all changed files (exclude .coderabbit.yaml itself):
+          - FAIL if new source code lines (added in this PR, not pre-existing) contain
+            TODO, FIXME, HACK, or XXX comments. Exclude .coderabbit.yaml and other
+            CI/CD configuration files whose instructions reference these markers by name.
           - PASS if no such markers are found in newly added lines.
           This is a pre-release project with a zero-tech-debt policy — all work is either
           done now or tracked as a GitHub issue.
@@ -211,7 +213,7 @@ reviews:
       enabled: false
     cppcheck:
       enabled: false
-    fortitude:
+    fortitudeLint:
       enabled: false
     fbinfer:
       enabled: false
@@ -221,13 +223,13 @@ reviews:
       enabled: false
     circleci:
       enabled: false
-    prisma-lint:
+    prismaLint:
       enabled: false
     luacheck:
       enabled: false
     brakeman:
       enabled: false
-    dotenv-lint:
+    dotenvLint:
       enabled: false
     htmlhint:
       enabled: false
@@ -235,13 +237,13 @@ reviews:
       enabled: false
     checkmake:
       enabled: false
-    osv-scanner:
-      enabled: false
+    osvScanner:
+      enabled: true
     blinter:
       enabled: false
-    smarty-lint:
+    smartyLint:
       enabled: false
-    ember-template-lint:
+    emberTemplateLint:
       enabled: false
     psscriptanalyzer:
       enabled: false
@@ -268,8 +270,11 @@ knowledge_base:
         sanitize-quoted-string) and composes ergo's pipeline middleware via
         pipeline-builder.js. Changes to ergo's lib/ exports or middleware return
         conventions may require ergo-router updates.
-    - repository: "CentralPing/centralping.github.io"
-      instructions: >
-        Project documentation website. API reference is generated from ergo-router's
-        JSDoc via starlight-typedoc. README content and route config documentation
-        should stay synchronized with the website guides.
+
+issue_enrichment:
+  auto_enrich:
+    enabled: true
+  planning:
+    enabled: true
+    auto_planning:
+      enabled: true
