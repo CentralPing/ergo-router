@@ -17,6 +17,7 @@ reviews:
   sequence_diagrams: true
   review_details: true
   poem: false
+  fortune: false
   review_status: true
   related_issues: true
   related_prs: true
@@ -142,9 +143,9 @@ reviews:
           Exclude test files from this check.
 
       - name: "Zero Tech Debt"
-        mode: "warning"
+        mode: "error"
         instructions: |
-          Pass/fail criteria for all changed files:
+          Pass/fail criteria for all changed files (exclude .coderabbit.yaml itself):
           - FAIL if new lines (added in this PR, not pre-existing) contain common
             debt-marker or unfinished-work comments.
           - PASS if no such markers are found in newly added lines.
@@ -237,7 +238,7 @@ reviews:
     checkmake:
       enabled: false
     osv-scanner:
-      enabled: false
+      enabled: true
     blinter:
       enabled: false
     smarty-lint:
@@ -261,6 +262,7 @@ knowledge_base:
     enabled: true
   code_guidelines:
     enabled: true
+  automatic_repository_linking: true
   linked_repositories:
     - repository: "CentralPing/ergo"
       instructions: >
@@ -274,3 +276,11 @@ knowledge_base:
         Project documentation website. API reference is generated from ergo-router's
         JSDoc via starlight-typedoc. README content and route config documentation
         should stay synchronized with the website guides.
+
+issue_enrichment:
+  auto_enrich:
+    enabled: true
+  planning:
+    enabled: true
+    auto_planning:
+      enabled: true
