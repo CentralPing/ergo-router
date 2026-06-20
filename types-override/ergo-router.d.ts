@@ -527,3 +527,60 @@ export declare function defineRoute<C extends RouteConfigBase>(
   config: C,
   execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
 ): RouteConfig<InferAccumulator<C>>;
+
+/**
+ * Type-inference helper for PUT routes. Alias for {@link definePost} — PUT
+ * routes share the same auto-included `body` typing as POST/PATCH.
+ *
+ * @example
+ * router.put('/users/:id', definePut(
+ *   {authorization: true, body: {limit: 2048}},
+ *   (req, res, acc) => {
+ *     acc.auth;           // AuthorizationResult
+ *     acc.body.parsed;    // unknown
+ *     acc.route.params;   // Record<string, string>
+ *   }
+ * ));
+ */
+export declare function definePut<C extends RouteConfigBase>(
+  config: C,
+  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoPostAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
+): RouteConfig<InferAccumulator<C> & AutoPostAccumulator<C>>;
+
+/**
+ * Type-inference helper for PATCH routes. Alias for {@link definePost} — PATCH
+ * routes share the same auto-included `body` typing as POST/PUT.
+ *
+ * @example
+ * router.patch('/users/:id', definePatch(
+ *   {authorization: true, body: true},
+ *   (req, res, acc) => {
+ *     acc.auth;           // AuthorizationResult
+ *     acc.body.parsed;    // unknown
+ *     acc.route.params;   // Record<string, string>
+ *   }
+ * ));
+ */
+export declare function definePatch<C extends RouteConfigBase>(
+  config: C,
+  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoPostAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
+): RouteConfig<InferAccumulator<C> & AutoPostAccumulator<C>>;
+
+/**
+ * Type-inference helper for DELETE routes. Alias for {@link defineGet} — DELETE
+ * routes share the same auto-included `url` typing as GET.
+ *
+ * @example
+ * router.delete('/users/:id', defineDelete(
+ *   {authorization: true, url: true},
+ *   (req, res, acc) => {
+ *     acc.auth;           // AuthorizationResult
+ *     acc.url.query;      // Record<string, string | string[]>
+ *     acc.route.params;   // Record<string, string>
+ *   }
+ * ));
+ */
+export declare function defineDelete<C extends RouteConfigBase>(
+  config: C,
+  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoGetAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
+): RouteConfig<InferAccumulator<C> & AutoGetAccumulator<C>>;
