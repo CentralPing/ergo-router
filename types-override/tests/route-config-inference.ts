@@ -54,7 +54,7 @@ import type {
   GenerateOpenAPIOptions,
 } from '../ergo-router.js';
 
-import {defineGet, definePost, defineRoute} from '../ergo-router.js';
+import {defineGet, definePost, defineRoute, definePut, definePatch, defineDelete} from '../ergo-router.js';
 
 import type createRouter from '../lib/router.js';
 import type buildPipeline from '../lib/pipeline-builder.js';
@@ -707,6 +707,138 @@ function testInferredFalseSuppressesType(router: Router) {
 }
 
 // ---------------------------------------------------------------------------
+// Positive: Auto-included body on PUT via definePut
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedBodyPutAlias(router: Router) {
+  router.put('/items/:id', definePut(
+    {},
+    (_req, _res, acc) => {
+      const body: BodyResult = acc.body;
+      return {response: {body: body.parsed}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included body on PATCH via definePatch
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedBodyPatchAlias(router: Router) {
+  router.patch('/items/:id', definePatch(
+    {},
+    (_req, _res, acc) => {
+      const body: BodyResult = acc.body;
+      return {response: {body: body.parsed}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Auto-included url on DELETE via defineDelete
+// ---------------------------------------------------------------------------
+
+function testAutoIncludedUrlDeleteAlias(router: Router) {
+  router.delete('/items/:id', defineDelete(
+    {},
+    (_req, _res, acc) => {
+      const url: UrlResult = acc.url;
+      return {response: {body: url.pathname}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: definePut with explicit config keys
+// ---------------------------------------------------------------------------
+
+function testDefinePutWithConfig(router: Router) {
+  router.put('/items/:id', definePut(
+    {authorization: true, body: {limit: 2048}},
+    (_req, _res, acc) => {
+      const auth: AuthorizationResult = acc.auth;
+      const body: BodyResult = acc.body;
+      return {response: {body: {auth, body: body.parsed}}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: definePatch with explicit config keys
+// ---------------------------------------------------------------------------
+
+function testDefinePatchWithConfig(router: Router) {
+  router.patch('/items/:id', definePatch(
+    {authorization: true, body: true},
+    (_req, _res, acc) => {
+      const auth: AuthorizationResult = acc.auth;
+      const body: BodyResult = acc.body;
+      return {response: {body: {auth, body: body.parsed}}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Positive: defineDelete with explicit config keys
+// ---------------------------------------------------------------------------
+
+function testDefineDeleteWithConfig(router: Router) {
+  router.delete('/items/:id', defineDelete(
+    {authorization: true, url: true},
+    (_req, _res, acc) => {
+      const auth: AuthorizationResult = acc.auth;
+      const url: UrlResult = acc.url;
+      return {response: {body: {auth, url: url.query}}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: url not available via definePut without explicit config
+// ---------------------------------------------------------------------------
+
+function testDefinePutRejectsUrl(router: Router) {
+  router.put('/items/:id', definePut(
+    {},
+    (_req, _res, acc) => {
+      // @ts-expect-error — url not in accumulator for PUT routes (definePut provides body, not url)
+      const bad: unknown = acc.url;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: url not available via definePatch without explicit config
+// ---------------------------------------------------------------------------
+
+function testDefinePatchRejectsUrl(router: Router) {
+  router.patch('/items/:id', definePatch(
+    {},
+    (_req, _res, acc) => {
+      // @ts-expect-error — url not in accumulator for PATCH routes (definePatch provides body, not url)
+      const bad: unknown = acc.url;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Negative: body not available via defineDelete without explicit config
+// ---------------------------------------------------------------------------
+
+function testDefineDeleteRejectsBody(router: Router) {
+  router.delete('/items/:id', defineDelete(
+    {},
+    (_req, _res, acc) => {
+      // @ts-expect-error — body not in accumulator for DELETE routes (defineDelete provides url, not body)
+      const bad: unknown = acc.body;
+      return {response: {body: bad}};
+    }
+  ));
+}
+
+// ---------------------------------------------------------------------------
 // Backward compat: Explicit generic still works
 // ---------------------------------------------------------------------------
 
@@ -844,6 +976,15 @@ void testInferredRejectsAbsentKey;
 void testInferredRejectsBodyOnGet;
 void testInferredRejectsUrlOnPost;
 void testInferredFalseSuppressesType;
+void testAutoIncludedBodyPutAlias;
+void testAutoIncludedBodyPatchAlias;
+void testAutoIncludedUrlDeleteAlias;
+void testDefinePutWithConfig;
+void testDefinePatchWithConfig;
+void testDefineDeleteWithConfig;
+void testDefinePutRejectsUrl;
+void testDefinePatchRejectsUrl;
+void testDefineDeleteRejectsBody;
 void testExplicitGenericStillWorks;
 void testBareRouteConfigStillWorks;
 void testFunctionHandlerStillWorks;

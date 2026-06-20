@@ -382,16 +382,19 @@ The `execute` function receives four arguments: `(req, res, domainAcc, responseA
 
 ### Typed Route Helpers
 
-`defineGet`, `definePost`, and `defineRoute` enable TypeScript to infer the domain accumulator type from enabled middleware config keys — providing fully typed `acc` in execute callbacks without manual generic annotation.
+`defineGet`, `definePost`, and `defineRoute` enable TypeScript to infer the domain accumulator type from enabled middleware config keys — providing fully typed `acc` in execute callbacks without manual generic annotation. Method-specific aliases (`definePut`, `definePatch`, `defineDelete`) improve IDE discoverability for developers searching by HTTP method.
 
 | Helper | Auto-includes | Use for |
 | --- | --- | --- |
-| `defineGet(config, execute)` | `{url: UrlResult}` | GET, DELETE routes |
-| `definePost(config, execute)` | `{body: BodyResult}` | POST, PUT, PATCH routes |
+| `defineGet(config, execute)` | `{url: UrlResult}` | GET routes |
+| `defineDelete(config, execute)` | `{url: UrlResult}` | DELETE routes |
+| `definePost(config, execute)` | `{body: BodyResult}` | POST routes |
+| `definePut(config, execute)` | `{body: BodyResult}` | PUT routes |
+| `definePatch(config, execute)` | `{body: BodyResult}` | PATCH routes |
 | `defineRoute(config, execute)` | — | Method-agnostic (add `url`/`body` explicitly) |
 
 ```js
-import createRouter, {defineGet, definePost} from '@centralping/ergo-router';
+import createRouter, {defineGet, definePost, definePut, definePatch, defineDelete} from '@centralping/ergo-router';
 
 const router = createRouter({
   transport: {requestId: {}, security: {}},
@@ -416,13 +419,40 @@ router.post('/users', definePost(
     return {response: {statusCode: 201, body: acc.body.parsed}};
   }
 ));
+
+router.put('/users/:id', definePut(
+  {authorization: true, body: {limit: 2048}},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult — typed
+    acc.body.parsed;  // unknown — typed
+    return {response: {body: acc.body.parsed}};
+  }
+));
+
+router.patch('/users/:id', definePatch(
+  {authorization: true, body: true},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult — typed
+    acc.body.parsed;  // unknown — typed
+    return {response: {body: acc.body.parsed}};
+  }
+));
+
+router.delete('/users/:id', defineDelete(
+  {authorization: true, url: true},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult — typed
+    acc.url.query;    // Record<string, string | string[]> — typed
+    return {response: {statusCode: 204}};
+  }
+));
 ```
 
 <details>
 <summary>TypeScript</summary>
 
 ```ts
-import createRouter, {defineGet, definePost} from '@centralping/ergo-router';
+import createRouter, {defineGet, definePost, definePut, definePatch, defineDelete} from '@centralping/ergo-router';
 
 const router = createRouter({
   transport: {requestId: {}, security: {}},
@@ -447,9 +477,38 @@ router.post('/users', definePost(
     return {response: {statusCode: 201, body: acc.body.parsed}};
   }
 ));
+
+router.put('/users/:id', definePut(
+  {authorization: true, body: {limit: 2048}},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult
+    acc.body.parsed;  // unknown
+    return {response: {body: acc.body.parsed}};
+  }
+));
+
+router.patch('/users/:id', definePatch(
+  {authorization: true, body: true},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult
+    acc.body.parsed;  // unknown
+    return {response: {body: acc.body.parsed}};
+  }
+));
+
+router.delete('/users/:id', defineDelete(
+  {authorization: true, url: true},
+  (req, res, acc) => {
+    acc.auth;         // AuthorizationResult
+    acc.url.query;    // Record<string, string | string[]>
+    return {response: {statusCode: 204}};
+  }
+));
 ```
 
 </details>
+
+`definePut` and `definePatch` are type-identical to `definePost`; `defineDelete` is type-identical to `defineGet`. The aliases exist purely for IDE discoverability — use whichever matches your HTTP method.
 
 Keys set to `false` correctly suppress their accumulator type. `paginate` transitively includes URL types.
 

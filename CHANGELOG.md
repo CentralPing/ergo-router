@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **`definePut`, `definePatch`, `defineDelete` typed route helpers.** (#132) Method-specific
+  aliases for IDE discoverability. `definePut` and `definePatch` are type-identical to
+  `definePost` (auto-include `{body: BodyResult}`); `defineDelete` is type-identical to
+  `defineGet` (auto-include `{url: UrlResult}`). Use whichever matches the HTTP method for
+  intuitive autocomplete — e.g., `router.put('/path', definePut({...}, handler))`.
+
 ### Changed
 
 - **Presets now include a default request timeout.** (#131, #137) `presets.jsonApi`,

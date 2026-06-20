@@ -14,6 +14,9 @@ export declare const presets: Presets;
 export declare const defineGet: typeof import('./ergo-router.js').defineGet;
 export declare const definePost: typeof import('./ergo-router.js').definePost;
 export declare const defineRoute: typeof import('./ergo-router.js').defineRoute;
+export declare const definePut: typeof import('./ergo-router.js').definePut;
+export declare const definePatch: typeof import('./ergo-router.js').definePatch;
+export declare const defineDelete: typeof import('./ergo-router.js').defineDelete;
 
 export type {
   RouterOptions,
