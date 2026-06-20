@@ -41,6 +41,10 @@ import type {
   RouterOptions,
   Router,
   Presets,
+  JsonApiPreset,
+  SsePreset,
+  WebhooksPreset,
+  PublicPreset,
   GracefulLog,
   GracefulOptions,
   GracefulResult,
@@ -257,7 +261,7 @@ function testPresetsType() {
   const p: Presets = {
     jsonApi: {
       transport: {requestId: {}, security: {}},
-      defaults: {accepts: {types: ['application/json']}},
+      defaults: {accepts: {types: ['application/json']}, timeout: {}},
     },
     sse: {
       transport: {requestId: {}, security: {}},
@@ -265,21 +269,106 @@ function testPresetsType() {
     },
     webhooks: {
       transport: {requestId: {}, security: {}},
-      defaults: {accepts: {types: ['application/json']}, idempotency: {required: true}},
+      defaults: {accepts: {types: ['application/json']}, idempotency: {required: true}, timeout: {}},
     },
     public: {
       transport: {requestId: {}, security: {}, rateLimit: {}},
-      defaults: {accepts: {types: ['application/json']}, cacheControl: {public: true, maxAge: 300}},
+      defaults: {accepts: {types: ['application/json']}, cacheControl: {public: true, maxAge: 300}, timeout: {}},
     },
   };
-  const jsonApiOpts: Readonly<RouterOptions> = p.jsonApi;
-  const sseOpts: Readonly<RouterOptions> = p.sse;
-  const webhooksOpts: Readonly<RouterOptions> = p.webhooks;
-  const publicOpts: Readonly<RouterOptions> = p.public;
-  void jsonApiOpts;
-  void sseOpts;
-  void webhooksOpts;
-  void publicOpts;
+
+  const jsonApi: JsonApiPreset = p.jsonApi;
+  const sse: SsePreset = p.sse;
+  const webhooks: WebhooksPreset = p.webhooks;
+  const pub: PublicPreset = p.public;
+
+  const jsonApiAccepts: AcceptsOptions = jsonApi.defaults.accepts;
+  const jsonApiTimeout: TimeoutOptions = jsonApi.defaults.timeout;
+  const sseCompress: false = sse.defaults.compress;
+  const sseTimeout: false = sse.defaults.timeout;
+  const sseAccepts: AcceptsOptions = sse.defaults.accepts;
+  const webhooksIdempotency: IdempotencyOptions = webhooks.defaults.idempotency;
+  const publicCacheControl: CacheControlOptions = pub.defaults.cacheControl;
+  const publicRateLimit: import('../ergo-router.js').TransportRateLimitOptions = pub.transport.rateLimit;
+
+  void jsonApiAccepts;
+  void jsonApiTimeout;
+  void sseCompress;
+  void sseTimeout;
+  void sseAccepts;
+  void webhooksIdempotency;
+  void publicCacheControl;
+  void publicRateLimit;
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Per-preset types are assignable to Readonly<RouterOptions> (backward compat)
+// ---------------------------------------------------------------------------
+
+function testPresetBackwardCompat() {
+  const jsonApi: JsonApiPreset = {
+    transport: {requestId: {}, security: {}},
+    defaults: {accepts: {types: ['application/json']}, timeout: {}},
+  };
+  const sse: SsePreset = {
+    transport: {requestId: {}, security: {}},
+    defaults: {compress: false, timeout: false, accepts: {types: ['text/event-stream']}},
+  };
+  const webhooks: WebhooksPreset = {
+    transport: {requestId: {}, security: {}},
+    defaults: {accepts: {types: ['application/json']}, idempotency: {required: true}, timeout: {}},
+  };
+  const pub: PublicPreset = {
+    transport: {requestId: {}, security: {}, rateLimit: {}},
+    defaults: {accepts: {types: ['application/json']}, cacheControl: {public: true, maxAge: 300}, timeout: {}},
+  };
+
+  const a: Readonly<RouterOptions> = jsonApi;
+  const b: Readonly<RouterOptions> = sse;
+  const c: Readonly<RouterOptions> = webhooks;
+  const d: Readonly<RouterOptions> = pub;
+  void a;
+  void b;
+  void c;
+  void d;
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Presets can be spread into createRouter() options
+// ---------------------------------------------------------------------------
+
+function testPresetSpread() {
+  const jsonApi: JsonApiPreset = {
+    transport: {requestId: {}, security: {}},
+    defaults: {accepts: {types: ['application/json']}, timeout: {}},
+  };
+  const opts: RouterOptions = {...jsonApi};
+  void opts;
+}
+
+// ---------------------------------------------------------------------------
+// Negative: Absent keys on narrowed preset types are type errors
+// ---------------------------------------------------------------------------
+
+function testPresetAbsentKeys() {
+  const jsonApi: JsonApiPreset = {
+    transport: {requestId: {}, security: {}},
+    defaults: {accepts: {types: ['application/json']}, timeout: {}},
+  };
+
+  // @ts-expect-error — jsonApi.defaults does not have cors
+  void jsonApi.defaults.cors;
+
+  // @ts-expect-error — jsonApi.transport does not have rateLimit
+  void jsonApi.transport.rateLimit;
+
+  const sse: SsePreset = {
+    transport: {requestId: {}, security: {}},
+    defaults: {compress: false, timeout: false, accepts: {types: ['text/event-stream']}},
+  };
+
+  // @ts-expect-error — sse.defaults does not have idempotency
+  void sse.defaults.idempotency;
 }
 
 // ---------------------------------------------------------------------------
@@ -397,6 +486,9 @@ void testCreateRouter;
 void testRouteHandlerTypes;
 void testSendOptions;
 void testPresetsType;
+void testPresetBackwardCompat;
+void testPresetSpread;
+void testPresetAbsentKeys;
 void testMissingExecute;
 void testWrongOptionType;
 void testRouteMethodExplicitGeneric;

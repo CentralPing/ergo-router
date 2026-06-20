@@ -14,6 +14,16 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Preset types are now narrowed per-preset.** (#138) Each preset in the `Presets` interface
+  (`jsonApi`, `sse`, `webhooks`, `public`) has a dedicated type interface (`JsonApiPreset`,
+  `SsePreset`, `WebhooksPreset`, `PublicPreset`) that declares exactly which transport and
+  defaults keys are present. Hovering over `presets.jsonApi.defaults` now shows the specific
+  keys (`accepts`, `timeout`) instead of the full `RouteConfigDefaults | undefined`. Accessing
+  a key not present in the preset (e.g., `presets.jsonApi.defaults.cors`) is now a type error,
+  accurately reflecting the runtime shape. To opt back into the wide type, annotate explicitly:
+  `const opts: RouterOptions = presets.jsonApi`. Per-preset types are exported for use as
+  standalone type annotations.
+
 - **Presets now include a default request timeout.** (#131, #137) `presets.jsonApi`,
   `presets.webhooks`, and `presets.public` include `timeout: Object.freeze({})` in their
   `defaults`, applying ergo's built-in 30-second request timeout. Previously, routes using

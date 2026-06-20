@@ -316,12 +316,36 @@ export interface GracefulResult {
 // Presets
 // ---------------------------------------------------------------------------
 
+/** JSON API preset shape — transport with request ID and security, defaults with accepts and timeout. */
+export interface JsonApiPreset {
+  readonly transport: Readonly<{requestId: TransportRequestIdOptions; security: TransportSecurityOptions}>;
+  readonly defaults: Readonly<{accepts: AcceptsOptions; timeout: TimeoutOptions}>;
+}
+
+/** SSE preset shape — transport with request ID and security, defaults with compression/timeout disabled and accepts restricted. */
+export interface SsePreset {
+  readonly transport: Readonly<{requestId: TransportRequestIdOptions; security: TransportSecurityOptions}>;
+  readonly defaults: Readonly<{compress: false; timeout: false; accepts: AcceptsOptions}>;
+}
+
+/** Webhooks preset shape — transport with request ID and security, defaults with accepts, idempotency, and timeout. */
+export interface WebhooksPreset {
+  readonly transport: Readonly<{requestId: TransportRequestIdOptions; security: TransportSecurityOptions}>;
+  readonly defaults: Readonly<{accepts: AcceptsOptions; idempotency: IdempotencyOptions; timeout: TimeoutOptions}>;
+}
+
+/** Public API preset shape — transport with request ID, security, and rate limiting, defaults with accepts, cache control, and timeout. */
+export interface PublicPreset {
+  readonly transport: Readonly<{requestId: TransportRequestIdOptions; security: TransportSecurityOptions; rateLimit: TransportRateLimitOptions}>;
+  readonly defaults: Readonly<{accepts: AcceptsOptions; cacheControl: CacheControlOptions; timeout: TimeoutOptions}>;
+}
+
 /** Namespace object containing all available router presets. */
 export interface Presets {
-  readonly jsonApi: Readonly<RouterOptions>;
-  readonly sse: Readonly<RouterOptions>;
-  readonly webhooks: Readonly<RouterOptions>;
-  readonly public: Readonly<RouterOptions>;
+  readonly jsonApi: JsonApiPreset;
+  readonly sse: SsePreset;
+  readonly webhooks: WebhooksPreset;
+  readonly public: PublicPreset;
 }
 
 // ---------------------------------------------------------------------------
