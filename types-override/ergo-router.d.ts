@@ -105,14 +105,21 @@ export interface ResponseInfo {
   url: string;
   bodySize: number | undefined;
   duration: number;
+  source: 'pipeline' | 'transport';
 }
 
-/** Callback signature for `onResponse` lifecycle hooks. */
+/**
+ * Callback signature for `onResponse` lifecycle hooks.
+ *
+ * `domainAcc` is `undefined` for transport-level short-circuit responses
+ * (404, 405, 415, 429, OPTIONS, CORS preflight) because no pipeline ran.
+ * Use `responseInfo.source` to distinguish between pipeline and transport responses.
+ */
 export type OnResponseHook = (
   req: IncomingMessage,
   res: ServerResponse,
   responseInfo: ResponseInfo,
-  domainAcc: Record<string, unknown>
+  domainAcc: Record<string, unknown> | undefined
 ) => unknown;
 
 // ---------------------------------------------------------------------------
