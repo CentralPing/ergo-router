@@ -1236,6 +1236,38 @@ function testDefaultBodyUnknownPreserved(router: Router) {
 }
 
 // ---------------------------------------------------------------------------
+// Positive: Explicit B generic narrows acc.body.parsed on defineGet
+// ---------------------------------------------------------------------------
+
+function testTypedBodyGet(router: Router) {
+  const config = {body: {limit: 1024}} as const;
+  router.get(
+    '/search',
+    defineGet<typeof config, CreateUserBody>(config, (_req, _res, acc) => {
+      const name: string = acc.body.parsed!.name;
+      const email: string = acc.body.parsed!.email;
+      return {response: {body: {name, email}}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Explicit B generic narrows acc.body.parsed on defineDelete
+// ---------------------------------------------------------------------------
+
+function testTypedBodyDelete(router: Router) {
+  const config = {body: {limit: 1024}} as const;
+  router.delete(
+    '/items/:id',
+    defineDelete<typeof config, CreateUserBody>(config, (_req, _res, acc) => {
+      const name: string = acc.body.parsed!.name;
+      const email: string = acc.body.parsed!.email;
+      return {response: {body: {name, email}}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Suppress unused-variable warnings (typed body tests)
 // ---------------------------------------------------------------------------
 
@@ -1246,3 +1278,5 @@ void testTypedBodyRejectsWrongProperty;
 void testTypedBodyFalseSuppresses;
 void testTypedBodyDefineRoute;
 void testDefaultBodyUnknownPreserved;
+void testTypedBodyGet;
+void testTypedBodyDelete;
