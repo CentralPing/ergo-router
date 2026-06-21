@@ -1227,6 +1227,9 @@ function testDefaultBodyUnknownPreserved(router: Router) {
     '/legacy',
     definePost({body: {limit: 1024}}, (_req, _res, acc) => {
       const parsed: unknown = acc.body.parsed;
+      // @ts-expect-error — default B should keep parsed as unknown (not any)
+      const shouldError = acc.body.parsed.name;
+      void shouldError;
       return {response: {body: parsed}};
     })
   );
