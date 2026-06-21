@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
+  router-level `onResponse` hook now fires for 404 (unknown path), 405 (method not allowed),
+  415 (unsupported content-type), 429 (rate limited), OPTIONS 204, and CORS preflight 204
+  responses — previously only pipeline-routed responses triggered the hook. A new
+  `responseInfo.source` field distinguishes `'transport'` from `'pipeline'` responses. The
+  `domainAcc` parameter is `undefined` for transport responses (no pipeline ran). Hook errors
+  are swallowed on transport paths, matching the existing pipeline behavior. Zero overhead
+  when `onResponse` is not configured.
+
 ### Added
 
 - **Typed body generics on `definePost`/`definePut`/`definePatch` helpers.** (#133) A second

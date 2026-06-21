@@ -321,7 +321,7 @@ Creates a new router instance with optional transport and default middleware con
 | `transport.rateLimit` | Rate limiting (sliding window)                   |
 | `defaults.*`          | Default middleware options applied to all routes  |
 | `timing`              | `boolean` or `{header?, precision?}` object — inject `X-Response-Time` header measuring pipeline execution time (default `false`) |
-| `onResponse`          | `function` — post-send observation hook `(req, res, responseInfo, domainAcc)` fired after every route response |
+| `onResponse`          | `function` — observation hook `(req, res, responseInfo, domainAcc)` fired on every response, including transport-level short-circuits (404, 405, 415, 429, OPTIONS, CORS preflight). `responseInfo.source` is `'pipeline'` or `'transport'`; `domainAcc` is `undefined` for transport responses |
 
 ### Route Methods
 
