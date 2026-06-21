@@ -577,7 +577,7 @@ export interface GenerateOpenAPIOptions {
  *
  * @typeParam C - The route config shape (inference source).
  * @typeParam B - Parsed body type. Defaults to `unknown`. Only relevant when
- *   `body: true` is explicitly set in config (uncommon for GET routes).
+ *   `body` is enabled in config (uncommon for GET routes).
  *
  * @example
  * router.get('/users/:id', defineGet(
@@ -635,7 +635,7 @@ export declare function definePost<C extends RouteConfigBase, B = unknown>(
  *
  * @typeParam C - The route config shape (inference source).
  * @typeParam B - Parsed body type. Defaults to `unknown`. Only relevant when
- *   `body: true` is explicitly set in config.
+ *   `body` is enabled in config.
  *
  * @example
  * router.get('/items', defineRoute(
@@ -717,7 +717,7 @@ export declare function definePatch<C extends RouteConfigBase, B = unknown>(
  *
  * @typeParam C - The route config shape (inference source).
  * @typeParam B - Parsed body type. Defaults to `unknown`. Only relevant when
- *   `body: true` is explicitly set in config (uncommon for DELETE routes).
+ *   `body` is enabled in config (uncommon for DELETE routes).
  *
  * @example
  * router.delete('/users/:id', defineDelete(
