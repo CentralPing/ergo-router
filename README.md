@@ -391,7 +391,7 @@ The `execute` function receives four arguments: `(req, res, domainAcc, responseA
 | `definePost<C, B>(config, execute)` | `{body: BodyResult<B>}` | POST routes |
 | `definePut<C, B>(config, execute)` | `{body: BodyResult<B>}` | PUT routes |
 | `definePatch<C, B>(config, execute)` | `{body: BodyResult<B>}` | PATCH routes |
-| `defineRoute(config, execute)` | — | Method-agnostic (add `url`/`body` explicitly) |
+| `defineRoute<C, B>(config, execute)` | — | Method-agnostic (add `url`/`body` explicitly) |
 
 ```js
 import createRouter, {defineGet, definePost, definePut, definePatch, defineDelete} from '@centralping/ergo-router';
