@@ -388,10 +388,10 @@ The `execute` function receives four arguments: `(req, res, domainAcc, responseA
 | --- | --- | --- |
 | `defineGet(config, execute)` | `{url: UrlResult}` | GET routes |
 | `defineDelete(config, execute)` | `{url: UrlResult}` | DELETE routes |
-| `definePost(config, execute)` | `{body: BodyResult}` | POST routes |
-| `definePut(config, execute)` | `{body: BodyResult}` | PUT routes |
-| `definePatch(config, execute)` | `{body: BodyResult}` | PATCH routes |
-| `defineRoute(config, execute)` | — | Method-agnostic (add `url`/`body` explicitly) |
+| `definePost<C, B>(config, execute)` | `{body: BodyResult<B>}` | POST routes |
+| `definePut<C, B>(config, execute)` | `{body: BodyResult<B>}` | PUT routes |
+| `definePatch<C, B>(config, execute)` | `{body: BodyResult<B>}` | PATCH routes |
+| `defineRoute<C, B>(config, execute)` | — | Method-agnostic (add `url`/`body` explicitly) |
 
 ```js
 import createRouter, {defineGet, definePost, definePut, definePatch, defineDelete} from '@centralping/ergo-router';
@@ -510,11 +510,35 @@ router.delete('/users/:id', defineDelete(
 
 `definePut` and `definePatch` are type-identical to `definePost`; `defineDelete` is type-identical to `defineGet`. The aliases exist purely for IDE discoverability — use whichever matches your HTTP method.
 
+#### Typed Body Narrowing
+
+The `B` generic parameter narrows `acc.body.parsed` from `unknown` to a specific type. Pass your body interface as the second type argument:
+
+```ts
+interface CreateUserBody {
+  name: string;
+  email: string;
+}
+
+const config = {authorization: true, body: {limit: 2048}} as const;
+
+router.post('/users', definePost<typeof config, CreateUserBody>(
+  config,
+  (req, res, acc) => {
+    acc.body.parsed!.name;   // string — narrowed from unknown
+    acc.body.parsed!.email;  // string — narrowed from unknown
+    return {response: {statusCode: 201, body: acc.body.parsed}};
+  }
+));
+```
+
+Without an explicit `B`, `acc.body.parsed` remains `unknown` (backward-compatible default).
+
 Keys set to `false` correctly suppress their accumulator type. `paginate` transitively includes URL types.
 
 **Known limitation:** Middleware enabled via `createRouter({defaults: {...}})` is not visible to type inference. Add the key explicitly to the route config for typed access.
 
-**Advanced types:** `RouteConfigBase`, `InferAccumulator<C>`, `AutoGetAccumulator<C>`, and `AutoPostAccumulator<C>` are exported for custom inference helpers.
+**Advanced types:** `RouteConfigBase`, `InferAccumulator<C, B>`, `AutoGetAccumulator<C>`, and `AutoPostAccumulator<C, B>` are exported for custom inference helpers.
 
 ### `graceful(handler, options?)`
 

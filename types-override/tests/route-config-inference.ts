@@ -33,7 +33,7 @@ import type {
   UrlResult,
   ValidateOptions,
   PreconditionOptions,
-  SendOptions,
+  SendOptions
 } from '@centralping/ergo/types';
 
 import type {
@@ -55,10 +55,17 @@ import type {
   OpenAPIOperation,
   OpenAPIComponents,
   OpenAPISecurityScheme,
-  GenerateOpenAPIOptions,
+  GenerateOpenAPIOptions
 } from '../ergo-router.js';
 
-import {defineGet, definePost, defineRoute, definePut, definePatch, defineDelete} from '../ergo-router.js';
+import {
+  defineGet,
+  definePost,
+  defineRoute,
+  definePut,
+  definePatch,
+  defineDelete
+} from '../ergo-router.js';
 
 import type createRouter from '../lib/router.js';
 import type buildPipeline from '../lib/pipeline-builder.js';
@@ -84,7 +91,7 @@ function testTypedMiddlewareOptions() {
     idempotency: {required: true, ttlMs: 86400000},
     validate: {formats: true},
     preconditionRequired: {methods: ['PUT', 'PATCH']},
-    execute: (_req, _res, acc) => ({response: {body: acc}}),
+    execute: (_req, _res, acc) => ({response: {body: acc}})
   };
   void config;
 }
@@ -99,7 +106,7 @@ function testBooleanMiddlewareKeys() {
     body: false,
     cookie: true,
     timeout: false,
-    execute: () => ({response: {body: 'ok'}}),
+    execute: () => ({response: {body: 'ok'}})
   };
   void config;
 }
@@ -120,7 +127,7 @@ function testGenericAccumulator() {
       const userId: string = acc.userId;
       const role: 'admin' | 'user' = acc.role;
       return {response: {body: {userId, role}}};
-    },
+    }
   };
   void config;
 }
@@ -134,7 +141,7 @@ function testDefaultAccumulator() {
     execute: (_req, _res, acc) => {
       const value: unknown = acc.anything;
       return {response: {body: value}};
-    },
+    }
   };
   void config;
 }
@@ -149,7 +156,7 @@ function testRouterOptions() {
       requestId: {trustProxy: true, header: 'x-trace-id'},
       security: {frameOptions: 'SAMEORIGIN', trustProxy: true},
       rateLimit: {max: 1000, windowMs: 60000},
-      cors: {origin: '*', credentials: false, maxAge: 86400},
+      cors: {origin: '*', credentials: false, maxAge: 86400}
     },
     strictPatch: true,
     strictBody: true,
@@ -158,8 +165,8 @@ function testRouterOptions() {
     send: {prettify: false, etag: true},
     defaults: {
       accepts: {types: ['application/json']},
-      timeout: {ms: 30000},
-    },
+      timeout: {ms: 30000}
+    }
   };
   void options;
 }
@@ -190,8 +197,12 @@ function testGracefulTypes() {
     hostname: '0.0.0.0',
     timeout: 5000,
     signals: ['SIGINT', 'SIGTERM'],
-    onStartup: async ({log}) => { log.info('starting'); },
-    onShutdown: async ({log, signal}) => { log.info(`shutdown: ${signal}`); },
+    onStartup: async ({log}) => {
+      log.info('starting');
+    },
+    onShutdown: async ({log, signal}) => {
+      log.info(`shutdown: ${signal}`);
+    }
   };
   void opts;
 }
@@ -205,7 +216,7 @@ function testTransportBooleans() {
     requestId: true,
     security: true,
     rateLimit: false,
-    cors: false,
+    cors: false
   };
   void transport;
 }
@@ -217,7 +228,7 @@ function testTransportBooleans() {
 function testBuildPipeline(fn: typeof buildPipeline) {
   const pipeline: any[] = fn('GET', {
     accepts: {types: ['application/json']},
-    execute: () => ({response: {body: 'ok'}}),
+    execute: () => ({response: {body: 'ok'}})
   });
   void pipeline;
 }
@@ -248,7 +259,7 @@ function testSendOptions() {
   const config: RouteConfig = {
     send: {prettify: true, etag: true, vary: ['Accept'], prefer: true},
     noSend: false,
-    execute: () => ({response: {body: 'ok'}}),
+    execute: () => ({response: {body: 'ok'}})
   };
   void config;
 }
@@ -261,20 +272,20 @@ function testPresetsType() {
   const p: Presets = {
     jsonApi: {
       transport: {requestId: {}, security: {}},
-      defaults: {accepts: {types: ['application/json']}, timeout: {}},
+      defaults: {accepts: {types: ['application/json']}, timeout: {}}
     },
     sse: {
       transport: {requestId: {}, security: {}},
-      defaults: {compress: false, timeout: false, accepts: {types: ['text/event-stream']}},
+      defaults: {compress: false, timeout: false, accepts: {types: ['text/event-stream']}}
     },
     webhooks: {
       transport: {requestId: {}, security: {}},
-      defaults: {accepts: {types: ['application/json']}, idempotency: {required: true}, timeout: {}},
+      defaults: {accepts: {types: ['application/json']}, idempotency: {required: true}, timeout: {}}
     },
     public: {
       transport: {requestId: {}, security: {}, rateLimit: {}},
-      defaults: {accepts: {types: ['application/json']}, cacheControl: {public: true, maxAge: 300}, timeout: {}},
-    },
+      defaults: {accepts: {types: ['application/json']}, cacheControl: {public: true, maxAge: 300}, timeout: {}}
+    }
   };
 
   const jsonApi: JsonApiPreset = p.jsonApi;
@@ -378,7 +389,7 @@ function testPresetAbsentKeys() {
 function testMissingExecute() {
   // @ts-expect-error — RouteConfig requires execute
   const config: RouteConfig = {
-    accepts: true,
+    accepts: true
   };
   void config;
 }
@@ -391,7 +402,7 @@ function testWrongOptionType() {
   const config: RouteConfig = {
     // @ts-expect-error — AcceptsOptions.types must be string[], not number
     accepts: {types: [123]},
-    execute: () => ({}),
+    execute: () => ({})
   };
   void config;
 }
@@ -412,14 +423,14 @@ function testRouteMethodExplicitGeneric(router: Router) {
       const id: string = acc.route.params.id;
       const userId: string = acc.auth.userId;
       return {response: {body: {id, userId}}};
-    },
+    }
   });
 
   router.post<RouteAccumulator>('/users/:id', {
     execute: (_req, _res, acc) => {
       const id: string = acc.route.params.id;
       return {response: {body: {id}}};
-    },
+    }
   });
 }
 
@@ -432,7 +443,7 @@ function testRouteMethodInferredGeneric(router: Router) {
     execute: (_req, _res, acc) => {
       const id: string = acc.route.params.id;
       return {response: {body: {id}}};
-    },
+    }
   };
 
   router.get('/users/:id', config);
@@ -450,7 +461,7 @@ function testRouteMethodDefaultGeneric(router: Router) {
     execute: (_req, _res, acc) => {
       const value: unknown = acc.anything;
       return {response: {body: value}};
-    },
+    }
   };
   router.get('/health', config);
 }
@@ -465,7 +476,7 @@ function testRouteMethodGenericRejectsInvalid(router: Router) {
       // @ts-expect-error — RouteAccumulator has no 'nonExistent' property
       const bad: string = acc.nonExistent;
       return {response: {body: bad}};
-    },
+    }
   });
 }
 
@@ -501,13 +512,13 @@ void testRouteMethodGenericRejectsInvalid;
 // ---------------------------------------------------------------------------
 
 function testInferredRouteParams(router: Router) {
-  router.get('/users/:id', defineGet(
-    {},
-    (_req, _res, acc) => {
+  router.get(
+    '/users/:id',
+    defineGet({}, (_req, _res, acc) => {
       const params: Record<string, string> = acc.route.params;
       return {response: {body: params}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -515,13 +526,13 @@ function testInferredRouteParams(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredBody(router: Router) {
-  router.post('/users', definePost(
-    {body: {limit: 1024}},
-    (_req, _res, acc) => {
+  router.post(
+    '/users',
+    definePost({body: {limit: 1024}}, (_req, _res, acc) => {
       const body: BodyResult = acc.body;
       return {response: {body: body.parsed}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -529,13 +540,16 @@ function testInferredBody(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredAuth(router: Router) {
-  router.get('/protected', defineGet(
-    {authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]}},
-    (_req, _res, acc) => {
-      const auth: AuthorizationResult = acc.auth;
-      return {response: {body: auth}};
-    }
-  ));
+  router.get(
+    '/protected',
+    defineGet(
+      {authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]}},
+      (_req, _res, acc) => {
+        const auth: AuthorizationResult = acc.auth;
+        return {response: {body: auth}};
+      }
+    )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -543,13 +557,13 @@ function testInferredAuth(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredUrl(router: Router) {
-  router.get('/search', defineGet(
-    {url: true},
-    (_req, _res, acc) => {
+  router.get(
+    '/search',
+    defineGet({url: true}, (_req, _res, acc) => {
       const url: UrlResult = acc.url;
       return {response: {body: url.query}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -557,13 +571,13 @@ function testInferredUrl(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredAccepts(router: Router) {
-  router.get('/items', defineGet(
-    {accepts: {types: ['application/json']}},
-    (_req, _res, acc) => {
+  router.get(
+    '/items',
+    defineGet({accepts: {types: ['application/json']}}, (_req, _res, acc) => {
       const accepts: AcceptsResult = acc.accepts;
       return {response: {body: accepts.type}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -571,13 +585,13 @@ function testInferredAccepts(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredCookies(router: Router) {
-  router.get('/session', defineGet(
-    {cookie: true},
-    (_req, _res, acc) => {
+  router.get(
+    '/session',
+    defineGet({cookie: true}, (_req, _res, acc) => {
       const cookies: CookieJar = acc.cookies;
       return {response: {body: cookies.size}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -585,14 +599,14 @@ function testInferredCookies(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredPaginate(router: Router) {
-  router.get('/items', defineRoute(
-    {paginate: true},
-    (_req, _res, acc) => {
+  router.get(
+    '/items',
+    defineRoute({paginate: true}, (_req, _res, acc) => {
       const paginate: PaginateResult = acc.paginate;
       const url: UrlResult = acc.url;
       return {response: {body: {paginate, query: url.query}}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -600,13 +614,13 @@ function testInferredPaginate(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredLogger(router: Router) {
-  router.get('/log', defineGet(
-    {logger: true},
-    (_req, _res, acc) => {
+  router.get(
+    '/log',
+    defineGet({logger: true}, (_req, _res, acc) => {
       const log: LogEntry = acc.log;
       return {response: {body: log.requestId}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -614,13 +628,13 @@ function testInferredLogger(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredTracing(router: Router) {
-  router.get('/traced', defineGet(
-    {tracing: {serviceName: 'my-app'}},
-    (_req, _res, acc) => {
+  router.get(
+    '/traced',
+    defineGet({tracing: {serviceName: 'my-app'}}, (_req, _res, acc) => {
       const trace: TracingResult = acc.trace;
       return {response: {body: trace.traceId}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -628,13 +642,13 @@ function testInferredTracing(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredIdempotency(router: Router) {
-  router.post('/actions', definePost(
-    {idempotency: {required: true}},
-    (_req, _res, acc) => {
+  router.post(
+    '/actions',
+    definePost({idempotency: {required: true}}, (_req, _res, acc) => {
       const idempotency: IdempotencyResult = acc.idempotency;
       return {response: {body: idempotency}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -642,13 +656,13 @@ function testInferredIdempotency(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredPrefer(router: Router) {
-  router.get('/items', defineGet(
-    {prefer: true},
-    (_req, _res, acc) => {
+  router.get(
+    '/items',
+    defineGet({prefer: true}, (_req, _res, acc) => {
       const prefer: PreferResult = acc.prefer;
       return {response: {body: prefer}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -656,16 +670,23 @@ function testInferredPrefer(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredMultipleMiddleware(router: Router) {
-  router.post('/users', definePost(
-    {authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]}, body: {limit: 2048}, logger: true},
-    (_req, _res, acc) => {
-      const auth: AuthorizationResult = acc.auth;
-      const body: BodyResult = acc.body;
-      const log: LogEntry = acc.log;
-      const params: Record<string, string> = acc.route.params;
-      return {response: {body: {auth, parsed: body.parsed, requestId: log.requestId, params}}};
-    }
-  ));
+  router.post(
+    '/users',
+    definePost(
+      {
+        authorization: {strategies: [{type: 'Bearer', authorizer: () => ({userId: '1'})}]},
+        body: {limit: 2048},
+        logger: true
+      },
+      (_req, _res, acc) => {
+        const auth: AuthorizationResult = acc.auth;
+        const body: BodyResult = acc.body;
+        const log: LogEntry = acc.log;
+        const params: Record<string, string> = acc.route.params;
+        return {response: {body: {auth, parsed: body.parsed, requestId: log.requestId, params}}};
+      }
+    )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -673,13 +694,13 @@ function testInferredMultipleMiddleware(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedBodyPost(router: Router) {
-  router.post('/data', definePost(
-    {},
-    (_req, _res, acc) => {
+  router.post(
+    '/data',
+    definePost({}, (_req, _res, acc) => {
       const body: BodyResult = acc.body;
       return {response: {body: body.parsed}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -687,13 +708,13 @@ function testAutoIncludedBodyPost(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedUrlGet(router: Router) {
-  router.get('/search', defineGet(
-    {},
-    (_req, _res, acc) => {
+  router.get(
+    '/search',
+    defineGet({}, (_req, _res, acc) => {
       const url: UrlResult = acc.url;
       return {response: {body: url.query}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -701,13 +722,13 @@ function testAutoIncludedUrlGet(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedUrlDelete(router: Router) {
-  router.delete('/items/:id', defineGet(
-    {},
-    (_req, _res, acc) => {
+  router.delete(
+    '/items/:id',
+    defineGet({}, (_req, _res, acc) => {
       const url: UrlResult = acc.url;
       return {response: {body: url.pathname}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -715,13 +736,13 @@ function testAutoIncludedUrlDelete(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedBodyPut(router: Router) {
-  router.put('/items/:id', definePost(
-    {},
-    (_req, _res, acc) => {
+  router.put(
+    '/items/:id',
+    definePost({}, (_req, _res, acc) => {
       const body: BodyResult = acc.body;
       return {response: {body: body.parsed}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -729,13 +750,13 @@ function testAutoIncludedBodyPut(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedBodyPatch(router: Router) {
-  router.patch('/items/:id', definePost(
-    {},
-    (_req, _res, acc) => {
+  router.patch(
+    '/items/:id',
+    definePost({}, (_req, _res, acc) => {
       const body: BodyResult = acc.body;
       return {response: {body: body.parsed}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -743,14 +764,14 @@ function testAutoIncludedBodyPatch(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredRejectsAbsentKey(router: Router) {
-  router.get('/simple', defineGet(
-    {},
-    (_req, _res, acc) => {
+  router.get(
+    '/simple',
+    defineGet({}, (_req, _res, acc) => {
       // @ts-expect-error — auth not in accumulator without authorization config
       const bad: unknown = acc.auth;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -758,14 +779,14 @@ function testInferredRejectsAbsentKey(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredRejectsBodyOnGet(router: Router) {
-  router.get('/read-only', defineGet(
-    {},
-    (_req, _res, acc) => {
+  router.get(
+    '/read-only',
+    defineGet({}, (_req, _res, acc) => {
       // @ts-expect-error — body not in accumulator for GET routes (defineGet provides url, not body)
       const bad: unknown = acc.body;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -773,14 +794,14 @@ function testInferredRejectsBodyOnGet(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredRejectsUrlOnPost(router: Router) {
-  router.post('/create', definePost(
-    {},
-    (_req, _res, acc) => {
+  router.post(
+    '/create',
+    definePost({}, (_req, _res, acc) => {
       // @ts-expect-error — url not in accumulator for POST routes (definePost provides body, not url)
       const bad: unknown = acc.url;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -788,14 +809,14 @@ function testInferredRejectsUrlOnPost(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testInferredFalseSuppressesType(router: Router) {
-  router.post('/no-body', definePost(
-    {body: false},
-    (_req, _res, acc) => {
+  router.post(
+    '/no-body',
+    definePost({body: false}, (_req, _res, acc) => {
       // @ts-expect-error — body: false disables body parsing, even on POST
       const bad: unknown = acc.body;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -803,13 +824,13 @@ function testInferredFalseSuppressesType(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedBodyPutAlias(router: Router) {
-  router.put('/items/:id', definePut(
-    {},
-    (_req, _res, acc) => {
+  router.put(
+    '/items/:id',
+    definePut({}, (_req, _res, acc) => {
       const body: BodyResult = acc.body;
       return {response: {body: body.parsed}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -817,13 +838,13 @@ function testAutoIncludedBodyPutAlias(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedBodyPatchAlias(router: Router) {
-  router.patch('/items/:id', definePatch(
-    {},
-    (_req, _res, acc) => {
+  router.patch(
+    '/items/:id',
+    definePatch({}, (_req, _res, acc) => {
       const body: BodyResult = acc.body;
       return {response: {body: body.parsed}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -831,13 +852,13 @@ function testAutoIncludedBodyPatchAlias(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testAutoIncludedUrlDeleteAlias(router: Router) {
-  router.delete('/items/:id', defineDelete(
-    {},
-    (_req, _res, acc) => {
+  router.delete(
+    '/items/:id',
+    defineDelete({}, (_req, _res, acc) => {
       const url: UrlResult = acc.url;
       return {response: {body: url.pathname}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -845,14 +866,14 @@ function testAutoIncludedUrlDeleteAlias(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testDefinePutWithConfig(router: Router) {
-  router.put('/items/:id', definePut(
-    {authorization: true, body: {limit: 2048}},
-    (_req, _res, acc) => {
+  router.put(
+    '/items/:id',
+    definePut({authorization: true, body: {limit: 2048}}, (_req, _res, acc) => {
       const auth: AuthorizationResult = acc.auth;
       const body: BodyResult = acc.body;
       return {response: {body: {auth, body: body.parsed}}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -860,14 +881,14 @@ function testDefinePutWithConfig(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testDefinePatchWithConfig(router: Router) {
-  router.patch('/items/:id', definePatch(
-    {authorization: true, body: true},
-    (_req, _res, acc) => {
+  router.patch(
+    '/items/:id',
+    definePatch({authorization: true, body: true}, (_req, _res, acc) => {
       const auth: AuthorizationResult = acc.auth;
       const body: BodyResult = acc.body;
       return {response: {body: {auth, body: body.parsed}}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -875,14 +896,14 @@ function testDefinePatchWithConfig(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testDefineDeleteWithConfig(router: Router) {
-  router.delete('/items/:id', defineDelete(
-    {authorization: true, url: true},
-    (_req, _res, acc) => {
+  router.delete(
+    '/items/:id',
+    defineDelete({authorization: true, url: true}, (_req, _res, acc) => {
       const auth: AuthorizationResult = acc.auth;
       const url: UrlResult = acc.url;
       return {response: {body: {auth, url: url.query}}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -890,14 +911,14 @@ function testDefineDeleteWithConfig(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testDefinePutRejectsUrl(router: Router) {
-  router.put('/items/:id', definePut(
-    {},
-    (_req, _res, acc) => {
+  router.put(
+    '/items/:id',
+    definePut({}, (_req, _res, acc) => {
       // @ts-expect-error — url not in accumulator for PUT routes (definePut provides body, not url)
       const bad: unknown = acc.url;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -905,14 +926,14 @@ function testDefinePutRejectsUrl(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testDefinePatchRejectsUrl(router: Router) {
-  router.patch('/items/:id', definePatch(
-    {},
-    (_req, _res, acc) => {
+  router.patch(
+    '/items/:id',
+    definePatch({}, (_req, _res, acc) => {
       // @ts-expect-error — url not in accumulator for PATCH routes (definePatch provides body, not url)
       const bad: unknown = acc.url;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -920,14 +941,14 @@ function testDefinePatchRejectsUrl(router: Router) {
 // ---------------------------------------------------------------------------
 
 function testDefineDeleteRejectsBody(router: Router) {
-  router.delete('/items/:id', defineDelete(
-    {},
-    (_req, _res, acc) => {
+  router.delete(
+    '/items/:id',
+    defineDelete({}, (_req, _res, acc) => {
       // @ts-expect-error — body not in accumulator for DELETE routes (defineDelete provides url, not body)
       const bad: unknown = acc.body;
       return {response: {body: bad}};
-    }
-  ));
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -946,7 +967,7 @@ function testExplicitGenericStillWorks(router: Router) {
       const userId: string = acc.userId;
       const role: 'admin' | 'user' = acc.role;
       return {response: {body: {userId, role}}};
-    },
+    }
   };
   router.get('/custom', config);
 }
@@ -960,7 +981,7 @@ function testBareRouteConfigStillWorks(router: Router) {
     execute: (_req, _res, acc) => {
       const value: unknown = acc.anything;
       return {response: {body: value}};
-    },
+    }
   };
   router.get('/bare', config);
 }
@@ -992,7 +1013,7 @@ function testGracefulLogType() {
       logger.info('ready');
       logger.warn('caution');
       logger.error('fail');
-    },
+    }
   };
   void opts;
 }
@@ -1027,7 +1048,7 @@ function testOpenAPIOptions() {
     version: '2.0.0',
     description: 'A test API',
     servers: [{url: 'https://api.example.com'}],
-    info: {contact: {name: 'Support', email: 'support@example.com'}},
+    info: {contact: {name: 'Support', email: 'support@example.com'}}
   };
   void opts;
 }
@@ -1035,7 +1056,10 @@ function testOpenAPIOptions() {
 function testOpenAPIPathItemAccess() {
   const item: OpenAPIPathItem = {
     get: {summary: 'List items', responses: {200: {description: 'OK'}}},
-    post: {summary: 'Create item', requestBody: {required: true, content: {'application/json': {schema: {type: 'object'}}}}},
+    post: {
+      summary: 'Create item',
+      requestBody: {required: true, content: {'application/json': {schema: {type: 'object'}}}}
+    }
   };
   const getOp: OpenAPIOperation | undefined = item.get;
   const summary: string | undefined = getOp?.summary;
@@ -1085,3 +1109,140 @@ void testGracefulLogType;
 void testOpenAPIImport;
 void testOpenAPIOptions;
 void testOpenAPIPathItemAccess;
+
+// ---------------------------------------------------------------------------
+// Positive: Explicit B generic narrows acc.body.parsed on definePost
+// ---------------------------------------------------------------------------
+
+interface CreateUserBody {
+  name: string;
+  email: string;
+}
+
+function testTypedBodyPost(router: Router) {
+  const config = {authorization: true, body: {limit: 2048}} as const;
+  router.post(
+    '/users',
+    definePost<typeof config, CreateUserBody>(config, (_req, _res, acc) => {
+      const name: string = acc.body.parsed!.name;
+      const email: string = acc.body.parsed!.email;
+      return {response: {statusCode: 201, body: {name, email}}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Explicit B generic narrows acc.body.parsed on definePut
+// ---------------------------------------------------------------------------
+
+interface UpdateUserBody {
+  name: string;
+}
+
+function testTypedBodyPut(router: Router) {
+  const config = {authorization: true, body: {limit: 2048}} as const;
+  router.put(
+    '/users/:id',
+    definePut<typeof config, UpdateUserBody>(config, (_req, _res, acc) => {
+      const name: string = acc.body.parsed!.name;
+      return {response: {body: {name}}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Explicit B generic narrows acc.body.parsed on definePatch
+// ---------------------------------------------------------------------------
+
+interface PatchUserBody {
+  name?: string;
+  email?: string;
+}
+
+function testTypedBodyPatch(router: Router) {
+  const config = {authorization: true, body: true} as const;
+  router.patch(
+    '/users/:id',
+    definePatch<typeof config, PatchUserBody>(config, (_req, _res, acc) => {
+      const name: string | undefined = acc.body.parsed!.name;
+      void name;
+      return {response: {body: acc.body.parsed}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Negative: Wrong body type property access is rejected
+// ---------------------------------------------------------------------------
+
+function testTypedBodyRejectsWrongProperty(router: Router) {
+  const config = {body: true} as const;
+  router.post(
+    '/items',
+    definePost<typeof config, CreateUserBody>(config, (_req, _res, acc) => {
+      // @ts-expect-error — CreateUserBody has no 'nonExistent' property
+      const bad: unknown = acc.body.parsed!.nonExistent;
+      return {response: {body: bad}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Positive: body: false still suppresses even with explicit B
+// ---------------------------------------------------------------------------
+
+function testTypedBodyFalseSuppresses(router: Router) {
+  const config = {body: false} as const;
+  router.post(
+    '/no-body',
+    definePost<typeof config, CreateUserBody>(config, (_req, _res, acc) => {
+      // @ts-expect-error — body: false disables body parsing even with B specified
+      const bad: unknown = acc.body;
+      return {response: {body: bad}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Positive: defineRoute with body: true and explicit B narrows parsed
+// ---------------------------------------------------------------------------
+
+function testTypedBodyDefineRoute(router: Router) {
+  const config = {body: true} as const;
+  router.post(
+    '/generic',
+    defineRoute<typeof config, CreateUserBody>(config, (_req, _res, acc) => {
+      const name: string = acc.body.parsed!.name;
+      return {response: {body: {name}}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Positive: Default B = unknown preserves backward compat (existing tests pass)
+// ---------------------------------------------------------------------------
+
+function testDefaultBodyUnknownPreserved(router: Router) {
+  router.post(
+    '/legacy',
+    definePost({body: {limit: 1024}}, (_req, _res, acc) => {
+      const parsed: unknown = acc.body.parsed;
+      // @ts-expect-error — default B should keep parsed as unknown (not any)
+      const shouldError = acc.body.parsed.name;
+      void shouldError;
+      return {response: {body: parsed}};
+    })
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Suppress unused-variable warnings (typed body tests)
+// ---------------------------------------------------------------------------
+
+void testTypedBodyPost;
+void testTypedBodyPut;
+void testTypedBodyPatch;
+void testTypedBodyRejectsWrongProperty;
+void testTypedBodyFalseSuppresses;
+void testTypedBodyDefineRoute;
+void testDefaultBodyUnknownPreserved;

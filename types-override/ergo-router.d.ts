@@ -33,7 +33,7 @@ import type {
   TracingOptions,
   TracingResult,
   UrlResult,
-  ValidateOptions,
+  ValidateOptions
 } from '@centralping/ergo/types';
 
 import type {IncomingMessage, ServerResponse} from 'node:http';
@@ -52,11 +52,13 @@ export interface TransportRequestIdOptions {
 
 /** Options for transport-level security headers. */
 export interface TransportSecurityOptions {
-  hsts?: {
-    maxAge: number;
-    includeSubDomains?: boolean;
-    preload?: boolean;
-  } | false;
+  hsts?:
+    | {
+        maxAge: number;
+        includeSubDomains?: boolean;
+        preload?: boolean;
+      }
+    | false;
   noSniff?: boolean;
   frameOptions?: string | false;
   referrerPolicy?: string | false;
@@ -69,7 +71,7 @@ export interface TransportSecurityOptions {
 export interface TransportRateLimitOptions {
   max?: number;
   windowMs?: number;
-  store?: { hit(key: string, windowMs: number): { count: number; resetMs: number } };
+  store?: {hit(key: string, windowMs: number): {count: number; resetMs: number}};
   keyGenerator?: (req: IncomingMessage) => string;
 }
 
@@ -106,7 +108,12 @@ export interface ResponseInfo {
 }
 
 /** Callback signature for `onResponse` lifecycle hooks. */
-export type OnResponseHook = (req: IncomingMessage, res: ServerResponse, responseInfo: ResponseInfo, domainAcc: Record<string, unknown>) => unknown;
+export type OnResponseHook = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  responseInfo: ResponseInfo,
+  domainAcc: Record<string, unknown>
+) => unknown;
 
 // ---------------------------------------------------------------------------
 // Router options
@@ -118,7 +125,12 @@ export interface RouterOptions {
   strictPatch?: boolean;
   strictBody?: boolean;
   send?: SendOptions;
-  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
+  catchHandler?: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    err: Error,
+    domainAcc?: Record<string, unknown>
+  ) => unknown;
   onResponse?: OnResponseHook;
   strict?: boolean;
   debug?: boolean;
@@ -151,7 +163,9 @@ export interface RouteConfigDefaults {
   validate?: ValidateOptions | boolean;
   timeout?: TimeoutOptions | boolean;
   compress?: CompressOptions | boolean;
-  use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
+  use?:
+    | Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}>
+    | false;
 }
 
 /**
@@ -183,11 +197,23 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
   validate?: ValidateOptions | boolean;
   timeout?: TimeoutOptions | boolean;
   compress?: CompressOptions | boolean;
-  use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: A, responseAcc: Record<string, unknown>) => unknown;
+  use?:
+    | Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}>
+    | false;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: A,
+    responseAcc: Record<string, unknown>
+  ) => unknown;
   send?: SendOptions;
   noSend?: boolean;
-  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
+  catchHandler?: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    err: Error,
+    domainAcc?: Record<string, unknown>
+  ) => unknown;
   onResponse?: OnResponseHook;
   openapi?: Record<string, unknown>;
 }
@@ -221,10 +247,17 @@ export interface RouteConfigBase {
   validate?: ValidateOptions | boolean;
   timeout?: TimeoutOptions | boolean;
   compress?: CompressOptions | boolean;
-  use?: Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}> | false;
+  use?:
+    | Array<((...args: any[]) => unknown) | {fn: (...args: any[]) => unknown; setPath: string}>
+    | false;
   send?: SendOptions;
   noSend?: boolean;
-  catchHandler?: (req: IncomingMessage, res: ServerResponse, err: Error, domainAcc?: Record<string, unknown>) => unknown;
+  catchHandler?: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    err: Error,
+    domainAcc?: Record<string, unknown>
+  ) => unknown;
   onResponse?: OnResponseHook;
   openapi?: Record<string, unknown>;
 }
@@ -233,27 +266,47 @@ export interface RouteConfigBase {
  * Computes the domain accumulator type from enabled middleware config keys.
  * Each conditional branch maps a config key to its runtime accumulator shape.
  * Keys set to `false` are excluded (they disable the middleware at runtime).
+ *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Defaults to `unknown`.
  */
-export type InferAccumulator<C> =
-  {route: {params: Record<string, string>}}
-  & (C extends {tracing: false} ? {} : C extends {tracing: infer _} ? {trace: TracingResult} : {})
-  & (C extends {logger: false} ? {} : C extends {logger: infer _} ? {log: LogEntry} : {})
-  & (C extends {accepts: false} ? {} : C extends {accepts: infer _} ? {accepts: AcceptsResult} : {})
-  & (C extends {cookie: false} ? {} : C extends {cookie: infer _} ? {cookies: CookieJar} : {})
-  & (C extends {url: false} ? {} : C extends {url: infer _} ? {url: UrlResult} : {})
-  & (C extends {paginate: false} ? {} : C extends {paginate: infer _}
+export type InferAccumulator<C, B = unknown> = {
+  route: {params: Record<string, string>};
+} & (C extends {tracing: false} ? {} : C extends {tracing: infer _} ? {trace: TracingResult} : {}) &
+  (C extends {logger: false} ? {} : C extends {logger: infer _} ? {log: LogEntry} : {}) &
+  (C extends {accepts: false} ? {} : C extends {accepts: infer _} ? {accepts: AcceptsResult} : {}) &
+  (C extends {cookie: false} ? {} : C extends {cookie: infer _} ? {cookies: CookieJar} : {}) &
+  (C extends {url: false} ? {} : C extends {url: infer _} ? {url: UrlResult} : {}) &
+  (C extends {paginate: false}
+    ? {}
+    : C extends {paginate: infer _}
       ? {paginate: PaginateResult} & (C extends {url: false} ? {} : {url: UrlResult})
-      : {})
-  & (C extends {prefer: false} ? {} : C extends {prefer: infer _} ? {prefer: PreferResult} : {})
-  & (C extends {authorization: false} ? {} : C extends {authorization: infer _} ? {auth: AuthorizationResult} : {})
-  & (C extends {body: false} ? {} : C extends {body: infer _} ? {body: BodyResult} : {})
-  & (C extends {idempotency: false} ? {} : C extends {idempotency: infer _} ? {idempotency: IdempotencyResult} : {});
+      : {}) &
+  (C extends {prefer: false} ? {} : C extends {prefer: infer _} ? {prefer: PreferResult} : {}) &
+  (C extends {authorization: false}
+    ? {}
+    : C extends {authorization: infer _}
+      ? {auth: AuthorizationResult}
+      : {}) &
+  (C extends {body: false} ? {} : C extends {body: infer _} ? {body: BodyResult<B>} : {}) &
+  (C extends {idempotency: false}
+    ? {}
+    : C extends {idempotency: infer _}
+      ? {idempotency: IdempotencyResult}
+      : {});
 
 /** Auto-included accumulator keys for GET/DELETE routes (url parsed unless explicitly disabled). */
 export type AutoGetAccumulator<C> = C extends {url: false} ? {} : {url: UrlResult};
 
-/** Auto-included accumulator keys for POST/PUT/PATCH routes (body parsed unless explicitly disabled). */
-export type AutoPostAccumulator<C> = C extends {body: false} ? {} : {body: BodyResult};
+/**
+ * Auto-included accumulator keys for POST/PUT/PATCH routes (body parsed unless explicitly disabled).
+ *
+ * @typeParam C - The route config shape.
+ * @typeParam B - Parsed body type. Defaults to `unknown`.
+ */
+export type AutoPostAccumulator<C, B = unknown> = C extends {body: false}
+  ? {}
+  : {body: BodyResult<B>};
 
 // ---------------------------------------------------------------------------
 // Router instance
@@ -269,17 +322,42 @@ export interface Router {
   _transport: unknown;
   _wrap: (...args: any[]) => unknown;
   _options: RouterOptions;
-  _routes: Array<{method: string; path: string; config: RouteConfig | undefined; defaults: RouteConfigDefaults | undefined}>;
+  _routes: Array<{
+    method: string;
+    path: string;
+    config: RouteConfig | undefined;
+    defaults: RouteConfigDefaults | undefined;
+  }>;
 
   use(...fns: Array<(...args: any[]) => unknown>): Router;
   mount(prefix: string, subRouter: Router): Router;
   handle(): (req: IncomingMessage, res: ServerResponse) => void;
   listen(port: number, ...args: any[]): import('node:http').Server;
-  get<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
-  post<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
-  put<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
-  patch<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
-  delete<A extends object = Record<string, unknown>>(path: string, pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>, routeOpts?: object): Router;
+  get<A extends object = Record<string, unknown>>(
+    path: string,
+    pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>,
+    routeOpts?: object
+  ): Router;
+  post<A extends object = Record<string, unknown>>(
+    path: string,
+    pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>,
+    routeOpts?: object
+  ): Router;
+  put<A extends object = Record<string, unknown>>(
+    path: string,
+    pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>,
+    routeOpts?: object
+  ): Router;
+  patch<A extends object = Record<string, unknown>>(
+    path: string,
+    pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>,
+    routeOpts?: object
+  ): Router;
+  delete<A extends object = Record<string, unknown>>(
+    path: string,
+    pipeline: ((...args: any[]) => unknown) | Array<unknown> | RouteConfig<A>,
+    routeOpts?: object
+  ): Router;
   routeTable(): string;
 }
 
@@ -497,6 +575,10 @@ export interface GenerateOpenAPIOptions {
  * inference). This helper separates the config (inference source) from the
  * execute callback (contextual typing target) into two parameters.
  *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Defaults to `unknown`. Only relevant when
+ *   `body` is enabled in config (uncommon for GET routes).
+ *
  * @example
  * router.get('/users/:id', defineGet(
  *   {authorization: true, url: true},
@@ -507,35 +589,53 @@ export interface GenerateOpenAPIOptions {
  *   }
  * ));
  */
-export declare function defineGet<C extends RouteConfigBase>(
+export declare function defineGet<C extends RouteConfigBase, B = unknown>(
   config: C,
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoGetAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
-): RouteConfig<InferAccumulator<C> & AutoGetAccumulator<C>>;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: InferAccumulator<C, B> & AutoGetAccumulator<C>,
+    responseAcc: Record<string, unknown>
+  ) => unknown
+): RouteConfig<InferAccumulator<C, B> & AutoGetAccumulator<C>>;
 
 /**
  * Type-inference helper for POST/PUT/PATCH routes. Infers the domain accumulator
  * type from enabled middleware config keys. Provides auto-included `body` typing
  * for POST/PUT/PATCH methods.
  *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Specify to narrow `acc.body.parsed` from `unknown`.
+ *
  * @example
- * router.post('/users', definePost(
+ * interface CreateUserBody { name: string; email: string; }
+ *
+ * router.post('/users', definePost<typeof config, CreateUserBody>(
  *   {authorization: true, body: {limit: 2048}},
  *   (req, res, acc) => {
- *     acc.auth;           // AuthorizationResult
- *     acc.body.parsed;    // unknown
- *     acc.route.params;   // Record<string, string>
+ *     acc.body.parsed.name;  // string — typed!
+ *     acc.body.parsed.email; // string — typed!
  *   }
  * ));
  */
-export declare function definePost<C extends RouteConfigBase>(
+export declare function definePost<C extends RouteConfigBase, B = unknown>(
   config: C,
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoPostAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
-): RouteConfig<InferAccumulator<C> & AutoPostAccumulator<C>>;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: InferAccumulator<C, B> & AutoPostAccumulator<C, B>,
+    responseAcc: Record<string, unknown>
+  ) => unknown
+): RouteConfig<InferAccumulator<C, B> & AutoPostAccumulator<C, B>>;
 
 /**
  * General type-inference helper (method-agnostic). Infers the domain accumulator
  * type from enabled middleware config keys. Does not include method-specific
  * auto-includes — add `url: true` or `body: true` explicitly if needed.
+ *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Defaults to `unknown`. Only relevant when
+ *   `body` is enabled in config.
  *
  * @example
  * router.get('/items', defineRoute(
@@ -547,52 +647,77 @@ export declare function definePost<C extends RouteConfigBase>(
  *   }
  * ));
  */
-export declare function defineRoute<C extends RouteConfigBase>(
+export declare function defineRoute<C extends RouteConfigBase, B = unknown>(
   config: C,
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
-): RouteConfig<InferAccumulator<C>>;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: InferAccumulator<C, B>,
+    responseAcc: Record<string, unknown>
+  ) => unknown
+): RouteConfig<InferAccumulator<C, B>>;
 
 /**
  * Type-inference helper for PUT routes. Alias for {@link definePost} — PUT
  * routes share the same auto-included `body` typing as POST/PATCH.
  *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Specify to narrow `acc.body.parsed` from `unknown`.
+ *
  * @example
- * router.put('/users/:id', definePut(
+ * interface UpdateUserBody { name: string; }
+ *
+ * router.put('/users/:id', definePut<typeof config, UpdateUserBody>(
  *   {authorization: true, body: {limit: 2048}},
  *   (req, res, acc) => {
- *     acc.auth;           // AuthorizationResult
- *     acc.body.parsed;    // unknown
- *     acc.route.params;   // Record<string, string>
+ *     acc.body.parsed.name;  // string — typed!
  *   }
  * ));
  */
-export declare function definePut<C extends RouteConfigBase>(
+export declare function definePut<C extends RouteConfigBase, B = unknown>(
   config: C,
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoPostAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
-): RouteConfig<InferAccumulator<C> & AutoPostAccumulator<C>>;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: InferAccumulator<C, B> & AutoPostAccumulator<C, B>,
+    responseAcc: Record<string, unknown>
+  ) => unknown
+): RouteConfig<InferAccumulator<C, B> & AutoPostAccumulator<C, B>>;
 
 /**
  * Type-inference helper for PATCH routes. Alias for {@link definePost} — PATCH
  * routes share the same auto-included `body` typing as POST/PUT.
  *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Specify to narrow `acc.body.parsed` from `unknown`.
+ *
  * @example
- * router.patch('/users/:id', definePatch(
+ * interface PatchUserBody { name?: string; }
+ *
+ * router.patch('/users/:id', definePatch<typeof config, PatchUserBody>(
  *   {authorization: true, body: true},
  *   (req, res, acc) => {
- *     acc.auth;           // AuthorizationResult
- *     acc.body.parsed;    // unknown
- *     acc.route.params;   // Record<string, string>
+ *     acc.body.parsed.name;  // string | undefined — typed!
  *   }
  * ));
  */
-export declare function definePatch<C extends RouteConfigBase>(
+export declare function definePatch<C extends RouteConfigBase, B = unknown>(
   config: C,
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoPostAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
-): RouteConfig<InferAccumulator<C> & AutoPostAccumulator<C>>;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: InferAccumulator<C, B> & AutoPostAccumulator<C, B>,
+    responseAcc: Record<string, unknown>
+  ) => unknown
+): RouteConfig<InferAccumulator<C, B> & AutoPostAccumulator<C, B>>;
 
 /**
  * Type-inference helper for DELETE routes. Alias for {@link defineGet} — DELETE
  * routes share the same auto-included `url` typing as GET.
+ *
+ * @typeParam C - The route config shape (inference source).
+ * @typeParam B - Parsed body type. Defaults to `unknown`. Only relevant when
+ *   `body` is enabled in config (uncommon for DELETE routes).
  *
  * @example
  * router.delete('/users/:id', defineDelete(
@@ -604,7 +729,12 @@ export declare function definePatch<C extends RouteConfigBase>(
  *   }
  * ));
  */
-export declare function defineDelete<C extends RouteConfigBase>(
+export declare function defineDelete<C extends RouteConfigBase, B = unknown>(
   config: C,
-  execute: (req: IncomingMessage, res: ServerResponse, domainAcc: InferAccumulator<C> & AutoGetAccumulator<C>, responseAcc: Record<string, unknown>) => unknown
-): RouteConfig<InferAccumulator<C> & AutoGetAccumulator<C>>;
+  execute: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    domainAcc: InferAccumulator<C, B> & AutoGetAccumulator<C>,
+    responseAcc: Record<string, unknown>
+  ) => unknown
+): RouteConfig<InferAccumulator<C, B> & AutoGetAccumulator<C>>;

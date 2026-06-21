@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Typed body generics on `definePost`/`definePut`/`definePatch` helpers.** (#133) A second
+  generic parameter `B` narrows `acc.body.parsed` from `unknown` to a user-specified type:
+  `definePost<typeof config, MyBody>(config, handler)`. All six `define*` helpers and
+  `InferAccumulator<C, B>` / `AutoPostAccumulator<C, B>` accept the optional `B` parameter
+  (defaults to `unknown` for backward compatibility). Requires `@centralping/ergo >=0.6.1`
+  for `BodyResult<T>`.
+
 - **`definePut`, `definePatch`, `defineDelete` typed route helpers.** (#132) Method-specific
   aliases for IDE discoverability. `definePut` and `definePatch` are type-identical to
   `definePost` (auto-include `{body: BodyResult}`); `defineDelete` is type-identical to
