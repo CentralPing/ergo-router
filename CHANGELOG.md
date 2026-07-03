@@ -53,6 +53,14 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **`send()` error boundary in `auto-wrap.js`.** (#154) `send()` was called outside the
+  try/catch block in both pipeline execution paths (catchFn success and non-catchFn). If
+  `send()` threw (e.g., `JSON.stringify` on a circular reference, `res.setHeader` after
+  headers sent), the error propagated as an unhandled rejection, the OTEL span leaked, and
+  `onResponse` hooks never fired. Both call sites are now wrapped in try/catch that emits
+  to error listeners, records the exception on the OTEL span, and ends the response with
+  500 if not already ended. Matches the established pattern in ergo's `handler.js`.
+
 - **`timing` option table rendering on npm.** (#134) The pipe character in the union type
   description (`boolean \| {header?, precision?}`) was interpreted as a table cell separator
   by npm's markdown renderer, splitting the description across columns. Replaced with prose
