@@ -53,6 +53,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **`generateOpenAPI()` now produces method-aware default response status codes.** (#152)
+  `buildOperation()` unconditionally defaulted to `{200: {description: 'Successful response'}}`
+  for all HTTP methods. POST routes now default to `201 Resource created` and DELETE routes
+  default to `204 No content`, matching the runtime behavior of `DEFAULT_STATUS` in
+  `lib/router.js`. GET, PUT, and PATCH routes continue to default to `200 Successful response`.
+  Annotation `responses` still override these defaults.
+
 - **`timing` option table rendering on npm.** (#134) The pipe character in the union type
   description (`boolean \| {header?, precision?}`) was interpreted as a table cell separator
   by npm's markdown renderer, splitting the description across columns. Replaced with prose
