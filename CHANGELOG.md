@@ -65,6 +65,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **`generateOpenAPI()` now produces method-aware default response status codes.** (#152)
+  `buildOperation()` unconditionally defaulted to `{200: {description: 'Successful response'}}`
+  for all HTTP methods. POST routes now default to `201 Resource created` and DELETE routes
+  default to `204 No content`, matching the runtime behavior of `DEFAULT_STATUS` in
+  `lib/router.js`. GET, PUT, and PATCH routes continue to default to `200 Successful response`.
+  Annotation `responses` still override these defaults.
+
 - **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
   denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
   characters, allowing other control characters (DEL, ESC), non-ASCII bytes, and whitespace
