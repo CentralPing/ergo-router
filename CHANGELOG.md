@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`strictPatch` Content-Type enforcement now runs after route matching.** (#153) Previously,
+  `strictPatch` enforcement ran before route matching in `dispatch()`, returning 415 for PATCH
+  requests to nonexistent paths (instead of 404) and method-mismatched paths (instead of 405).
+  Now runs inside the matched-route block, consistent with `strictBody` (POST/PUT).
+
+- **Route table no longer shows `body` as enabled for non-body-method routes.** (#155)
+  `route-table.js` incorrectly reported body middleware for GET/DELETE routes that explicitly
+  configured `body: true`, but `pipeline-builder.js` never includes body parsing for
+  non-`BODY_METHODS` routes. The route table condition now matches pipeline-builder exactly.
+
 ### Changed
 
 - **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
@@ -59,6 +71,19 @@ All notable changes to this project will be documented in this file.
   check (`config.trustProxy === true`). A non-boolean truthy value (e.g., `'false'` from an
   env var) would silently enable proxy trust in request-id but not in security-headers.
   Changed to `if (trustProxy === true)` to align with the established pattern.
+- **`send()` error boundary in `auto-wrap.js`.** (#154) `send()` was called outside the
+  try/catch block in both pipeline execution paths (catchFn success and non-catchFn). If
+  `send()` threw (e.g., `JSON.stringify` on a circular reference, `res.setHeader` after
+  headers sent), the error propagated as an unhandled rejection, the OTEL span leaked, and
+  `onResponse` hooks never fired. Both call sites are now wrapped in try/catch that emits
+  to error listeners, records the exception on the OTEL span, and ends the response with
+  500 if not already ended. Matches the established pattern in ergo's `handler.js`.
+- **`generateOpenAPI()` now produces method-aware default response status codes.** (#152)
+  `buildOperation()` unconditionally defaulted to `{200: {description: 'Successful response'}}`
+  for all HTTP methods. POST routes now default to `201 Resource created` and DELETE routes
+  default to `204 No content`, matching the runtime behavior of `DEFAULT_STATUS` in
+  `lib/router.js`. GET, PUT, and PATCH routes continue to default to `200 Successful response`.
+  Annotation `responses` still override these defaults.
 
 - **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
   denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
@@ -112,7 +137,7 @@ All notable changes to this project will be documented in this file.
   `OpenAPISecurityScheme`, `OpenAPIComponents`, `GenerateOpenAPIOptions`) are exported from
   the main entry point and the `./openapi` sub-path. All interfaces use template-literal
   index signatures (`[key: \`x-${string}\`]: unknown`) restricting extension members to the
-  `x-*` prefix required by OpenAPI 3.1 §4.1.
+  <!-- prettier-ignore -->`x-*` prefix required by OpenAPI 3.1 §4.1.
 
 ## [0.5.0] - 2026-06-13
 
