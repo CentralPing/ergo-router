@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Refactored
+
+- **Extracted `rejectWithProblem` helper in `dispatch()`.** (#172) The duplicated
+  `endWithProblem + invokeTransportHook + return` pattern across 4 dispatch reject sites
+  (strictBody 415, strictPatch 415, 405, 404) is now consolidated into a single
+  module-private helper function. No behavioral change — the same functions are called
+  with the same arguments in the same order. Reduces maintenance liability when modifying
+  the short-circuit response path.
+
 ### Fixed
 
 - **`strictPatch` Content-Type enforcement now runs after route matching.** (#153) Previously,
