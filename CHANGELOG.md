@@ -65,6 +65,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **`send()` error boundary in `auto-wrap.js`.** (#154) `send()` was called outside the
+  try/catch block in both pipeline execution paths (catchFn success and non-catchFn). If
+  `send()` threw (e.g., `JSON.stringify` on a circular reference, `res.setHeader` after
+  headers sent), the error propagated as an unhandled rejection, the OTEL span leaked, and
+  `onResponse` hooks never fired. Both call sites are now wrapped in try/catch that emits
+  to error listeners, records the exception on the OTEL span, and ends the response with
+  500 if not already ended. Matches the established pattern in ergo's `handler.js`.
 - **`generateOpenAPI()` now produces method-aware default response status codes.** (#152)
   `buildOperation()` unconditionally defaulted to `{200: {description: 'Successful response'}}`
   for all HTTP methods. POST routes now default to `201 Resource created` and DELETE routes
@@ -124,7 +131,7 @@ All notable changes to this project will be documented in this file.
   `OpenAPISecurityScheme`, `OpenAPIComponents`, `GenerateOpenAPIOptions`) are exported from
   the main entry point and the `./openapi` sub-path. All interfaces use template-literal
   index signatures (`[key: \`x-${string}\`]: unknown`) restricting extension members to the
-  `x-*` prefix required by OpenAPI 3.1 §4.1.
+  <!-- prettier-ignore -->`x-*` prefix required by OpenAPI 3.1 §4.1.
 
 ## [0.5.0] - 2026-06-13
 
