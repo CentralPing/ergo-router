@@ -35,10 +35,10 @@ Incoming Request
   |
   +- 2. REST Semantics
   |    +- OPTIONS -> 204 + Allow header
-  |    +- PATCH Content-Type enforcement -> 415
   |    +- HEAD -> falls back to GET handler
   |    +- Route matching (find-my-way)
   |    +- 405 + Allow or 404
+  |    +- Content-Type enforcement (POST/PUT/PATCH) -> 415
   |
   +- 3. Application Pipeline
        +- Route params seeded in accumulator
