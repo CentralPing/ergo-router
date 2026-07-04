@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`strictPatch` Content-Type enforcement now runs after route matching.** (#153) Previously,
+  `strictPatch` enforcement ran before route matching in `dispatch()`, returning 415 for PATCH
+  requests to nonexistent paths (instead of 404) and method-mismatched paths (instead of 405).
+  Now runs inside the matched-route block, consistent with `strictBody` (POST/PUT).
+
+- **Route table no longer shows `body` as enabled for non-body-method routes.** (#155)
+  `route-table.js` incorrectly reported body middleware for GET/DELETE routes that explicitly
+  configured `body: true`, but `pipeline-builder.js` never includes body parsing for
+  non-`BODY_METHODS` routes. The route table condition now matches pipeline-builder exactly.
+
 ### Changed
 
 - **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
