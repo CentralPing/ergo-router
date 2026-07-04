@@ -53,6 +53,14 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
+  denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
+  characters, allowing other control characters (DEL, ESC), non-ASCII bytes, and whitespace
+  through to HTTP response headers. Replaced with `VCHAR_RE` (`/^[\x21-\x7E]+$/`), which
+  enforces RFC 9110 §5.5 visible ASCII characters. Custom `generate()` functions returning
+  characters outside the `\x21-\x7E` range will now throw a `TypeError`. The default
+  `crypto.randomUUID` generator is unaffected (UUID characters are within the VCHAR range).
+
 - **`timing` option table rendering on npm.** (#134) The pipe character in the union type
   description (`boolean \| {header?, precision?}`) was interpreted as a table cell separator
   by npm's markdown renderer, splitting the description across columns. Replaced with prose
