@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
   requests to nonexistent paths (instead of 404) and method-mismatched paths (instead of 405).
   Now runs inside the matched-route block, consistent with `strictBody` (POST/PUT).
 
+- **Route table no longer shows `body` as enabled for non-body-method routes.** (#155)
+  `route-table.js` incorrectly reported body middleware for GET/DELETE routes that explicitly
+  configured `body: true`, but `pipeline-builder.js` never includes body parsing for
+  non-`BODY_METHODS` routes. The route table condition now matches pipeline-builder exactly.
+
 ### Changed
 
 - **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
@@ -59,6 +64,14 @@ All notable changes to this project will be documented in this file.
   explicitly disabled for long-lived connections).
 
 ### Fixed
+
+- **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
+  denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
+  characters, allowing other control characters (DEL, ESC), non-ASCII bytes, and whitespace
+  through to HTTP response headers. Replaced with `VCHAR_RE` (`/^[\x21-\x7E]+$/`), which
+  enforces RFC 9110 §5.5 visible ASCII characters. Custom `generate()` functions returning
+  characters outside the `\x21-\x7E` range will now throw a `TypeError`. The default
+  `crypto.randomUUID` generator is unaffected (UUID characters are within the VCHAR range).
 
 - **`timing` option table rendering on npm.** (#134) The pipe character in the union type
   description (`boolean \| {header?, precision?}`) was interpreted as a table cell separator
