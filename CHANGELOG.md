@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Route table no longer shows `body` as enabled for non-body-method routes.** (#155)
+  `route-table.js` incorrectly reported body middleware for GET/DELETE routes that explicitly
+  configured `body: true`, but `pipeline-builder.js` never includes body parsing for
+  non-`BODY_METHODS` routes. The route table condition now matches pipeline-builder exactly.
+
 ### Changed
 
 - **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
