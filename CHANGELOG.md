@@ -57,8 +57,6 @@ All notable changes to this project will be documented in this file.
   `timeout: false` to disable per-route. `presets.sse` is unchanged (timeout is already
   explicitly disabled for long-lived connections).
 
-### Changed
-
 - Bumped `@centralping/ergo` peer dependency floor to `>=0.7.0 <0.8.0` (was `>=0.6.1 <0.7.0`).
   Floor bumped to 0.7.0 for `DEFAULT_REDACTED_HEADERS` import from `lib/redact-headers`. (#158)
 
