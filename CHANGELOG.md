@@ -61,6 +61,14 @@ All notable changes to this project will be documented in this file.
   to error listeners, records the exception on the OTEL span, and ends the response with
   500 if not already ended. Matches the established pattern in ergo's `handler.js`.
 
+- **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
+  denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
+  characters, allowing other control characters (DEL, ESC), non-ASCII bytes, and whitespace
+  through to HTTP response headers. Replaced with `VCHAR_RE` (`/^[\x21-\x7E]+$/`), which
+  enforces RFC 9110 §5.5 visible ASCII characters. Custom `generate()` functions returning
+  characters outside the `\x21-\x7E` range will now throw a `TypeError`. The default
+  `crypto.randomUUID` generator is unaffected (UUID characters are within the VCHAR range).
+
 - **`timing` option table rendering on npm.** (#134) The pipe character in the union type
   description (`boolean \| {header?, precision?}`) was interpreted as a table cell separator
   by npm's markdown renderer, splitting the description across columns. Replaced with prose
@@ -105,7 +113,7 @@ All notable changes to this project will be documented in this file.
   `OpenAPISecurityScheme`, `OpenAPIComponents`, `GenerateOpenAPIOptions`) are exported from
   the main entry point and the `./openapi` sub-path. All interfaces use template-literal
   index signatures (`[key: \`x-${string}\`]: unknown`) restricting extension members to the
-  `x-*` prefix required by OpenAPI 3.1 §4.1.
+`x-\*` prefix required by OpenAPI 3.1 §4.1.
 
 ## [0.5.0] - 2026-06-13
 
