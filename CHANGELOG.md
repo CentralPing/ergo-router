@@ -65,6 +65,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Request-ID `trustProxy` check now uses strict boolean comparison.** (#162) The
+  `createRequestId` factory used a loose truthiness check (`if (trustProxy)`) to gate proxy
+  trust behavior, while the sibling `createSecurityHeaders` factory used a strict boolean
+  check (`config.trustProxy === true`). A non-boolean truthy value (e.g., `'false'` from an
+  env var) would silently enable proxy trust in request-id but not in security-headers.
+  Changed to `if (trustProxy === true)` to align with the established pattern.
 - **`send()` error boundary in `auto-wrap.js`.** (#154) `send()` was called outside the
   try/catch block in both pipeline execution paths (catchFn success and non-catchFn). If
   `send()` threw (e.g., `JSON.stringify` on a circular reference, `res.setHeader` after
