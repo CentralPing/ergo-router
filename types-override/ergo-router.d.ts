@@ -330,9 +330,10 @@ export interface Router {
   _middleware: Array<(...args: any[]) => unknown>;
   _subRouters: Array<{prefix: string; router: Router}>;
   _transport: unknown;
-  _wrap: (...args: any[]) => unknown;
-  _options: RouterOptions;
-  _routes: Array<{
+    _wrap: (...args: any[]) => unknown;
+    _options: RouterOptions;
+    _redactSet: Set<string>;
+    _routes: Array<{
     method: string;
     path: string;
     config: RouteConfig | undefined;
