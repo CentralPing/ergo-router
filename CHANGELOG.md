@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`redactHeaders` option on `createRouter()` and per-route config.** (#158) Controls which
+  response header names are replaced with `'[REDACTED]'` in `responseInfo.headers` passed to
+  `onResponse` hooks. Accepts a `Set<string>`. Router-level sets the default; route-level
+  overrides. Pass an empty Set to disable redaction. Requires `@centralping/ergo >=0.7.0` for
+  `lib/redact-headers.js` shared primitive.
+
 - **Typed body generics on `definePost`/`definePut`/`definePatch` helpers.** (#133) A second
   generic parameter `B` narrows `acc.body.parsed` from `unknown` to a user-specified type:
   `definePost<typeof config, MyBody>(config, handler)`. All six `define*` helpers and
@@ -51,7 +57,21 @@ All notable changes to this project will be documented in this file.
   `timeout: false` to disable per-route. `presets.sse` is unchanged (timeout is already
   explicitly disabled for long-lived connections).
 
+### Changed
+
+- Bumped `@centralping/ergo` peer dependency floor to `>=0.7.0 <0.8.0` (was `>=0.6.1 <0.7.0`).
+  Floor bumped to 0.7.0 for `DEFAULT_REDACTED_HEADERS` import from `lib/redact-headers`. (#158)
+
 ### Fixed
+
+- **`onResponse` hook headers now redacted by default (security fix).** (#158) The three
+  `buildResponseInfo()` call sites in `auto-wrap.js` and `router.js` were not forwarding the
+  `redactSet` parameter added in ergo#181. `responseInfo.headers` in `onResponse` hooks now
+  replaces `authorization`, `proxy-authorization`, `cookie`, and `set-cookie` values with
+  `'[REDACTED]'` by default — matching ergo's standalone `handler()` behavior. This is a
+  behavioral change: consumers that previously read raw sensitive header values from
+  `responseInfo.headers` will now see `'[REDACTED]'`. To restore the previous behavior, pass
+  `redactHeaders: new Set()` to `createRouter()` or the per-route config.
 
 - **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
   denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
