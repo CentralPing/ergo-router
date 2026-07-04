@@ -53,6 +53,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Request-ID `trustProxy` check now uses strict boolean comparison.** (#162) The
+  `createRequestId` factory used a loose truthiness check (`if (trustProxy)`) to gate proxy
+  trust behavior, while the sibling `createSecurityHeaders` factory used a strict boolean
+  check (`config.trustProxy === true`). A non-boolean truthy value (e.g., `'false'` from an
+  env var) would silently enable proxy trust in request-id but not in security-headers.
+  Changed to `if (trustProxy === true)` to align with the established pattern.
+
 - **Request-ID `generate()` validation now uses VCHAR allowlist instead of CRLF/null
   denylist.** (#160) The `HEADER_UNSAFE_RE` denylist (`/[\r\n\0]/`) only rejected three
   characters, allowing other control characters (DEL, ESC), non-ASCII bytes, and whitespace
