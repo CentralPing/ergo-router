@@ -139,6 +139,7 @@ export interface RouterOptions {
     domainAcc?: Record<string, unknown>
   ) => unknown;
   onResponse?: OnResponseHook;
+  redactHeaders?: Set<string>;
   strict?: boolean;
   debug?: boolean;
   timing?: boolean | {header?: string; precision?: number};
@@ -222,6 +223,7 @@ export interface RouteConfig<A extends object = Record<string, unknown>> {
     domainAcc?: Record<string, unknown>
   ) => unknown;
   onResponse?: OnResponseHook;
+  redactHeaders?: Set<string>;
   openapi?: Record<string, unknown>;
 }
 
@@ -266,6 +268,7 @@ export interface RouteConfigBase {
     domainAcc?: Record<string, unknown>
   ) => unknown;
   onResponse?: OnResponseHook;
+  redactHeaders?: Set<string>;
   openapi?: Record<string, unknown>;
 }
 
@@ -327,9 +330,10 @@ export interface Router {
   _middleware: Array<(...args: any[]) => unknown>;
   _subRouters: Array<{prefix: string; router: Router}>;
   _transport: unknown;
-  _wrap: (...args: any[]) => unknown;
-  _options: RouterOptions;
-  _routes: Array<{
+    _wrap: (...args: any[]) => unknown;
+    _options: RouterOptions;
+    _redactSet: Set<string>;
+    _routes: Array<{
     method: string;
     path: string;
     config: RouteConfig | undefined;

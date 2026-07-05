@@ -13,30 +13,13 @@ All notable changes to this project will be documented in this file.
   with the same arguments in the same order. Reduces maintenance liability when modifying
   the short-circuit response path.
 
-### Fixed
-
-- **`strictPatch` Content-Type enforcement now runs after route matching.** (#153) Previously,
-  `strictPatch` enforcement ran before route matching in `dispatch()`, returning 415 for PATCH
-  requests to nonexistent paths (instead of 404) and method-mismatched paths (instead of 405).
-  Now runs inside the matched-route block, consistent with `strictBody` (POST/PUT).
-
-- **Route table no longer shows `body` as enabled for non-body-method routes.** (#155)
-  `route-table.js` incorrectly reported body middleware for GET/DELETE routes that explicitly
-  configured `body: true`, but `pipeline-builder.js` never includes body parsing for
-  non-`BODY_METHODS` routes. The route table condition now matches pipeline-builder exactly.
-
-### Changed
-
-- **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
-  router-level `onResponse` hook now fires for 404 (unknown path), 405 (method not allowed),
-  415 (unsupported content-type), 429 (rate limited), OPTIONS 204, and CORS preflight 204
-  responses — previously only pipeline-routed responses triggered the hook. A new
-  `responseInfo.source` field distinguishes `'transport'` from `'pipeline'` responses. The
-  `domainAcc` parameter is `undefined` for transport responses (no pipeline ran). Hook errors
-  are swallowed on transport paths, matching the existing pipeline behavior. Zero overhead
-  when `onResponse` is not configured.
-
 ### Added
+
+- **`redactHeaders` option on `createRouter()` and per-route config.** (#158) Controls which
+  response header names are replaced with `'[REDACTED]'` in `responseInfo.headers` passed to
+  `onResponse` hooks. Accepts a `Set<string>`. Router-level sets the default; route-level
+  overrides. Pass an empty Set to disable redaction. Requires `@centralping/ergo >=0.7.0` for
+  `lib/redact-headers.js` shared primitive.
 
 - **Typed body generics on `definePost`/`definePut`/`definePatch` helpers.** (#133) A second
   generic parameter `B` narrows `acc.body.parsed` from `unknown` to a user-specified type:
@@ -52,6 +35,15 @@ All notable changes to this project will be documented in this file.
   intuitive autocomplete — e.g., `router.put('/path', definePut({...}, handler))`.
 
 ### Changed
+
+- **`onResponse` hook now fires for transport-level short-circuit responses.** (#135) The
+  router-level `onResponse` hook now fires for 404 (unknown path), 405 (method not allowed),
+  415 (unsupported content-type), 429 (rate limited), OPTIONS 204, and CORS preflight 204
+  responses — previously only pipeline-routed responses triggered the hook. A new
+  `responseInfo.source` field distinguishes `'transport'` from `'pipeline'` responses. The
+  `domainAcc` parameter is `undefined` for transport responses (no pipeline ran). Hook errors
+  are swallowed on transport paths, matching the existing pipeline behavior. Zero overhead
+  when `onResponse` is not configured.
 
 - **Preset types are now narrowed per-preset.** (#138) Each preset in the `Presets` interface
   (`jsonApi`, `sse`, `webhooks`, `public`) has a dedicated type interface (`JsonApiPreset`,
@@ -72,8 +64,35 @@ All notable changes to this project will be documented in this file.
   `timeout: false` to disable per-route. `presets.sse` is unchanged (timeout is already
   explicitly disabled for long-lived connections).
 
+- Bumped `@centralping/ergo` peer dependency floor to `>=0.7.0 <0.8.0` (was `>=0.6.1 <0.7.0`).
+  Floor bumped to 0.7.0 for `DEFAULT_REDACTED_HEADERS` import from `lib/redact-headers`. (#158)
+
 ### Fixed
 
+- **`strictPatch` Content-Type enforcement now runs after route matching.** (#153) Previously,
+  `strictPatch` enforcement ran before route matching in `dispatch()`, returning 415 for PATCH
+  requests to nonexistent paths (instead of 404) and method-mismatched paths (instead of 405).
+  Now runs inside the matched-route block, consistent with `strictBody` (POST/PUT).
+
+- **Route table no longer shows `body` as enabled for non-body-method routes.** (#155)
+  `route-table.js` incorrectly reported body middleware for GET/DELETE routes that explicitly
+  configured `body: true`, but `pipeline-builder.js` never includes body parsing for
+  non-`BODY_METHODS` routes. The route table condition now matches pipeline-builder exactly.
+
+- **`onResponse` hook headers now redacted by default (security fix).** (#158) The three
+  `buildResponseInfo()` call sites in `auto-wrap.js` and `router.js` were not forwarding the
+  `redactSet` parameter added in ergo#181. `responseInfo.headers` in `onResponse` hooks now
+  replaces `authorization`, `proxy-authorization`, `cookie`, and `set-cookie` values with
+  `'[REDACTED]'` by default — matching ergo's standalone `handler()` behavior. This is a
+  behavioral change: consumers that previously read raw sensitive header values from
+  `responseInfo.headers` will now see `'[REDACTED]'`. To restore the previous behavior, pass
+  `redactHeaders: new Set()` to `createRouter()` or the per-route config.
+- **Request-ID `trustProxy` check now uses strict boolean comparison.** (#162) The
+  `createRequestId` factory used a loose truthiness check (`if (trustProxy)`) to gate proxy
+  trust behavior, while the sibling `createSecurityHeaders` factory used a strict boolean
+  check (`config.trustProxy === true`). A non-boolean truthy value (e.g., `'false'` from an
+  env var) would silently enable proxy trust in request-id but not in security-headers.
+  Changed to `if (trustProxy === true)` to align with the established pattern.
 - **`send()` error boundary in `auto-wrap.js`.** (#154) `send()` was called outside the
   try/catch block in both pipeline execution paths (catchFn success and non-catchFn). If
   `send()` threw (e.g., `JSON.stringify` on a circular reference, `res.setHeader` after
