@@ -69,6 +69,16 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Programmatic `routeOpts` now validated at registration time.** (#171) The third argument
+  to route registration methods (`router.get(path, pipeline, routeOpts)`) was never validated
+  — wrong-type values like `{noSend: 'yes'}` or `{catchHandler: {}}` silently passed
+  registration and produced unexpected runtime behavior. Programmatic route options now
+  receive the same key validation (with Levenshtein "did you mean?" suggestions) and type
+  checks (`send`: object, `noSend`: boolean, `catchHandler`: function, `onResponse`: function,
+  `redactHeaders`: Set) as declarative route config objects. The inline type checks in
+  `validateRouteConfig()` are refactored to delegate to the shared `validateRouteOpts()`
+  function. Respects the router's `strict` setting (throw vs warn for unknown keys).
+
 - **`strictPatch` Content-Type enforcement now runs after route matching.** (#153) Previously,
   `strictPatch` enforcement ran before route matching in `dispatch()`, returning 415 for PATCH
   requests to nonexistent paths (instead of 404) and method-mismatched paths (instead of 405).
