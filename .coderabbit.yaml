@@ -263,6 +263,12 @@ knowledge_base:
   code_guidelines:
     enabled: true
   linked_repositories:
+    - repository: "CentralPing/ergo-wire"
+      instructions: >
+        Canonical HTTP wire-format contract for the Ergo stack (Link headers, idempotency
+        sf-strings, pagination keys, Retry-After). ergo re-exports these primitives; ergo-router
+        inherits wire behavior through @centralping/ergo middleware. Verify pagination links use
+        per_page on the wire and idempotency keys use RFC 8941 quoted values.
     - repository: "CentralPing/ergo"
       instructions: >
         Core middleware toolkit. ergo-router consumes shared primitives from ergo's
