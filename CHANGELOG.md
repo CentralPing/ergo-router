@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **OTEL span attributes use stable HTTP semantic conventions.** (#175)
+  Span finalization in `auto-wrap.js` now sets `http.response.status_code` (via
+  `ATTR_HTTP_RESPONSE_STATUS_CODE` from `@centralping/ergo/lib/otel-attributes`)
+  instead of the deprecated pre-v1.20 name `http.status_code`. Aligns router
+  telemetry with ergo's `handler()` path. Requires `@centralping/ergo >=0.8.0`.
+
+- **Peer dependency floor raised to `@centralping/ergo >=0.8.0 <0.9.0`.** (#175)
+  Required for `lib/otel-attributes.js` (`@since 0.8.0`).
+
 ### Refactored
 
 - **Extracted `rejectWithProblem` helper in `dispatch()`.** (#172) The duplicated
