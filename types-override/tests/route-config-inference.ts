@@ -49,6 +49,7 @@ import type {
   GracefulOptions,
   GracefulResult,
   TransportOptions,
+  TransportRateLimitOptions,
   OpenAPIDocument,
   OpenAPIInfo,
   OpenAPIPathItem,
@@ -300,7 +301,7 @@ function testPresetsType() {
   const sseAccepts: AcceptsOptions = sse.defaults.accepts;
   const webhooksIdempotency: IdempotencyOptions = webhooks.defaults.idempotency;
   const publicCacheControl: CacheControlOptions = pub.defaults.cacheControl;
-  const publicRateLimit: import('../ergo-router.js').TransportRateLimitOptions = pub.transport.rateLimit;
+  const publicRateLimit: TransportRateLimitOptions = pub.transport.rateLimit;
 
   void jsonApiAccepts;
   void jsonApiTimeout;
@@ -310,6 +311,30 @@ function testPresetsType() {
   void webhooksIdempotency;
   void publicCacheControl;
   void publicRateLimit;
+}
+
+// ---------------------------------------------------------------------------
+// Positive/Negative: TransportRateLimitOptions.store.hit requires resetAt (ergo#263)
+// ---------------------------------------------------------------------------
+
+function testTransportRateLimitStoreRequiresResetAt() {
+  type HitReturn = ReturnType<NonNullable<TransportRateLimitOptions['store']>['hit']>;
+
+  const withResetAt: HitReturn = {count: 1, resetMs: 1000, resetAt: 1_001_000};
+  void withResetAt;
+
+  // @ts-expect-error — store hit() return type requires resetAt
+  const missingResetAt: HitReturn = {count: 1, resetMs: 1000};
+  void missingResetAt;
+
+  const opts: TransportRateLimitOptions = {
+    store: {
+      hit(_key, _windowMs) {
+        return {count: 1, resetMs: 1000, resetAt: 1_001_000};
+      }
+    }
+  };
+  void opts;
 }
 
 // ---------------------------------------------------------------------------
