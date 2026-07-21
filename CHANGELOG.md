@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **BREAKING: Transport rate-limit store `hit()` return type requires `resetAt`.**
-  Mirrors `@centralping/ergo` store contract (#263): custom stores must return
+  Mirrors `@centralping/ergo` store contract (ergo#263): custom stores must return
   `{count, resetMs, resetAt}` where `resetAt` is absolute milliseconds in the
   store's clock domain. `TransportRateLimitOptions.store` types updated accordingly.
 
