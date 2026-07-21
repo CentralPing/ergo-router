@@ -71,7 +71,7 @@ export interface TransportSecurityOptions {
 export interface TransportRateLimitOptions {
   max?: number;
   windowMs?: number;
-  store?: {hit(key: string, windowMs: number): {count: number; resetMs: number}};
+  store?: {hit(key: string, windowMs: number): {count: number; resetMs: number; resetAt: number}};
   keyGenerator?: (req: IncomingMessage) => string;
 }
 
