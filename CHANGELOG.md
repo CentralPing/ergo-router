@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Transport HSTS default uses `DEFAULT_HSTS_MAX_AGE_SECONDS` from ergo.** (#284 companion)
+  `lib/transport/security-headers.js` imports the named constant from
+  `@centralping/ergo/lib/security-headers` instead of duplicating `31536000`.
+  Requires an ergo release that exports `DEFAULT_HSTS_MAX_AGE_SECONDS`.
+
 - **BREAKING: Transport rate-limit store `hit()` return type requires `resetAt`.**
   Mirrors `@centralping/ergo` store contract (ergo#263): custom stores must return
   `{count, resetMs, resetAt}` where `resetAt` is absolute milliseconds in the
