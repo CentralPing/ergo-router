@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - **Uses `resolveTimingConfig` from `@centralping/ergo/lib/response-time`.** (#304)
   `auto-wrap.js` no longer inlines timing option resolution; it imports the shared
   pure resolver so the `boolean | {header?, precision?}` contract has one
-  implementation. Peer floor raised to `@centralping/ergo >=0.8.1 <0.9.0`.
+  implementation. Peer floor raised to `@centralping/ergo >=0.9.0 <1.0.0`.
 
 - **BREAKING: Transport rate-limit store `hit()` return type requires `resetAt`.**
   Mirrors `@centralping/ergo` store contract (ergo#263): custom stores must return
