@@ -11,9 +11,6 @@ All notable changes to this project will be documented in this file.
   `@centralping/ergo/lib/security-headers` instead of duplicating `31536000`.
   Requires `@centralping/ergo >=0.9.0` (named export shipped in ergo 0.9.0).
 
-- **Peer dependency floor raised to `@centralping/ergo >=0.9.0 <0.10.0`.** (#284 companion)
-  Required for `DEFAULT_HSTS_MAX_AGE_SECONDS` (`@since 0.9.0`).
-
 - **Transport security-headers nullish config merge.** (#185) Optional fields passed as
   `undefined` (e.g. `{hsts: undefined}` from spreads) no longer overwrite
   `TRANSPORT_DEFAULTS` and silently disable HSTS.
@@ -21,6 +18,11 @@ All notable changes to this project will be documented in this file.
 - **Transport HSTS `trustProxy` uses leftmost `X-Forwarded-Proto` hop.** (#186)
   Multi-value headers such as `https,http` now treat the client-facing hop as
   authoritative for HTTPS detection.
+
+- **Uses `resolveTimingConfig` from `@centralping/ergo/lib/response-time`.** (#304)
+  `auto-wrap.js` no longer inlines timing option resolution; it imports the shared
+  pure resolver so the `boolean | {header?, precision?}` contract has one
+  implementation. Peer floor raised to `@centralping/ergo >=0.9.0 <1.0.0`.
 
 - **BREAKING: Transport rate-limit store `hit()` return type requires `resetAt`.**
   Mirrors `@centralping/ergo` store contract (ergo#263): custom stores must return
@@ -31,10 +33,7 @@ All notable changes to this project will be documented in this file.
   Span finalization in `auto-wrap.js` now sets `http.response.status_code` (via
   `ATTR_HTTP_RESPONSE_STATUS_CODE` from `@centralping/ergo/lib/otel-attributes`)
   instead of the deprecated pre-v1.20 name `http.status_code`. Aligns router
-  telemetry with ergo's `handler()` path. Requires `@centralping/ergo >=0.8.0`.
-
-- **Peer dependency floor raised to `@centralping/ergo >=0.8.0 <0.9.0`.** (#175)
-  Required for `lib/otel-attributes.js` (`@since 0.8.0`).
+  telemetry with ergo's `handler()` path.
 
 ### Refactored
 
