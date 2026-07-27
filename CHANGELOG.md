@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Uses `resolveTimingConfig` from `@centralping/ergo/lib/response-time`.** (#304)
+  `auto-wrap.js` no longer inlines timing option resolution; it imports the shared
+  pure resolver so the `boolean | {header?, precision?}` contract has one
+  implementation. Peer floor raised to `@centralping/ergo >=0.9.0 <1.0.0`.
+
 - **BREAKING: Transport rate-limit store `hit()` return type requires `resetAt`.**
   Mirrors `@centralping/ergo` store contract (ergo#263): custom stores must return
   `{count, resetMs, resetAt}` where `resetAt` is absolute milliseconds in the
@@ -15,10 +20,7 @@ All notable changes to this project will be documented in this file.
   Span finalization in `auto-wrap.js` now sets `http.response.status_code` (via
   `ATTR_HTTP_RESPONSE_STATUS_CODE` from `@centralping/ergo/lib/otel-attributes`)
   instead of the deprecated pre-v1.20 name `http.status_code`. Aligns router
-  telemetry with ergo's `handler()` path. Requires `@centralping/ergo >=0.8.0`.
-
-- **Peer dependency floor raised to `@centralping/ergo >=0.8.0 <0.9.0`.** (#175)
-  Required for `lib/otel-attributes.js` (`@since 0.8.0`).
+  telemetry with ergo's `handler()` path.
 
 ### Refactored
 
