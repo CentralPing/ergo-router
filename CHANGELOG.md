@@ -9,7 +9,18 @@ All notable changes to this project will be documented in this file.
 - **Transport HSTS default uses `DEFAULT_HSTS_MAX_AGE_SECONDS` from ergo.** (#284 companion)
   `lib/transport/security-headers.js` imports the named constant from
   `@centralping/ergo/lib/security-headers` instead of duplicating `31536000`.
-  Requires an ergo release that exports `DEFAULT_HSTS_MAX_AGE_SECONDS`.
+  Requires `@centralping/ergo >=0.9.0` (named export shipped in ergo 0.9.0).
+
+- **Peer dependency floor raised to `@centralping/ergo >=0.9.0 <0.10.0`.** (#284 companion)
+  Required for `DEFAULT_HSTS_MAX_AGE_SECONDS` (`@since 0.9.0`).
+
+- **Transport security-headers nullish config merge.** (#185) Optional fields passed as
+  `undefined` (e.g. `{hsts: undefined}` from spreads) no longer overwrite
+  `TRANSPORT_DEFAULTS` and silently disable HSTS.
+
+- **Transport HSTS `trustProxy` uses leftmost `X-Forwarded-Proto` hop.** (#186)
+  Multi-value headers such as `https,http` now treat the client-facing hop as
+  authoritative for HTTPS detection.
 
 - **BREAKING: Transport rate-limit store `hit()` return type requires `resetAt`.**
   Mirrors `@centralping/ergo` store contract (ergo#263): custom stores must return
